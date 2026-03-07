@@ -1,2 +1,2 @@
 from .entities.entity import Entity
-from .entities.characters.npc import NPC
+from .entities.characters.character import Character

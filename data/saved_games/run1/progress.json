@@ -1,0 +1,10 @@
+{
+  "player_pos":
+  {
+    "x": "2",
+    "y": "2"
+  },
+  "player_health": "80",
+  "level": "1"
+}
+}

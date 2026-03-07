@@ -1,11 +1,20 @@
 from model import *
+from model.entities.characters.player import Player
+from view import *
 
 class GameController:
-    def create_game(self):
+    @staticmethod
+    def create_game():
         pass
-    def start_game(self):
+
+    @staticmethod
+    def start_game():
         pass
-    def end_game(self):
+
+    @staticmethod
+    def end_game():
         pass
-    def create_player(self):
-        pass
+
+    @staticmethod
+    def create_player(name:str):
+        return Player(name)

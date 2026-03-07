@@ -1,6 +1,9 @@
 from controller import GameController as gc
-from model import *
-import view
 
-player = gc.create_player()
+player = gc.create_player("Hans")
+player2 = gc.create_player("Hans2")
 
+print(player)
+
+print(repr(player))
+print(repr(player2))
