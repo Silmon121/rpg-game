@@ -1,6 +1,9 @@
-import controller
-from model import *
-import view
+from controller import GameController as gc
 
-en1 = Entity("john")
+player = gc.create_player("Hans")
+player2 = gc.create_player("Hans2")
 
+print(player)
+
+print(repr(player))
+print(repr(player2))
