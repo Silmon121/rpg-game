@@ -5,6 +5,8 @@ class Entity:
         self.__hp = self._max_hp
     def __str__(self):
         return f"{self._name}"
+    def __repr__(self):
+        return f"{self._name}: {self._id}"
 
     @property
     def name(self):
