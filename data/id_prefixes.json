@@ -1,6 +1,0 @@
-{
-  "player": {"id_prefix": "P"},
-  "enemy": {"id_prefix":  "E"},
-  "elf": {"id_prefix":  "SE"},
-  "goblin": {"id_prefix":  "SG"}
-}
