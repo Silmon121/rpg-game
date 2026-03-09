@@ -2,13 +2,17 @@ from model import Entity
 from abc import ABC, abstractmethod
 
 class Character(Entity, ABC):
-    __id_prefix = "CH"
+    __ID_PREFIX = "CH"
     _max_health = 100
 
-    def __init__(self,name:str=None, hp:int= None, immortal: bool = False):
-        super().__init__(name)
+    def __init__(self, **kwargs):
+        parameters = {"hp", "immortal"}
+        if parameters in kwargs.keys():
+            hp = kwargs.pop("hp", self._max_health)
+        super().__init__(kwargs)
         self._hp = hp if hp is not None else self._max_health
         self._immortal = immortal
+
 
     def __repr__(self):
         return super().__repr__() + f"\nCHARACTER INFO:\nMax HP: {self._max_health}\nHP: {self._hp}\nImmortal: {self._immortal}\n"

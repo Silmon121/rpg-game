@@ -2,7 +2,7 @@ from model import Character
 
 
 class Player(Character):
-    __id_prefix = "P"
+    __ID_PREFIX = "P"
     _max_health = 120
     def __init__(self, name:str):
         super().__init__(name)
