@@ -1,31 +1,29 @@
 from abc import ABC, abstractmethod
 from typing import Type
 
-from IPython.core.interactiveshell import is_integer_string
-
 
 class Entity(ABC):
     __ID_PREFIX: str = "E"
-    __id_counter: int = 0
-
-    @staticmethod
-    def _check_parameters(given_params: dict [str, type], expected_parameters: dict[str, type]):
-        additional_parameters = set(given_params.keys()) - set(expected_parameters.keys())
-        if additional_parameters:
-            raise ValueError(f"Invalid parameters: {additional_parameters}\nPlease use valid parameters: {expected_parameters.keys()}")
-
-        for key, value in given_params.items():
-            if not isinstance(value, expected_parameters[key]):
-                raise ValueError(f"Value for parameter {key} is {value}, expected {expected_parameters[key]}")
+    __expected_parameters: dict[str, type] = {
+        "x": int,
+        "y": int,
+        "name": str
+    }
+    _id_counter: int = 0
 
     def __init__(self, **kwargs):
-        expected_parameters = {"x": int, "y": int, "name": str}
-        self._check_parameters()
-
+        self.__expected_parameters = self.__load_parameters() # creating an instance copy of the __expected_parameters on a class level
+        self._check_parameters(given=kwargs, expected=self.__expected_parameters)
         # Assignment
-        x = kwargs.pop("x", None) if isinstance(kwargs["x"], int) else None
-        y = kwargs.pop("y", None) if isinstance(kwargs["y"], int) else None
-        name = kwargs.pop("name", None) if isinstance(kwargs["name"], str) else None
+        x = kwargs.get("x", None)
+        if x is not None:
+            if x < 0:
+                raise ValueError("x must be positive")
+        y = kwargs.get("y", None)
+        if y is not None:
+            if y < 0:
+                raise ValueError("y must be positive")
+        name = kwargs.get("name", None)
 
         # Initialization
         self._id = self.__generate_id(self.__get_prefix_chain())
@@ -40,7 +38,12 @@ class Entity(ABC):
     def __repr__(self):
         return f"ENTITY INFO:\nID: {self._id}\nCode: {self._code}\nName: {self._name}\nX: {self.x}\nY: {self.y}"
 
-
+    def __init_subclass__(cls):
+        super.__init_subclass__()
+        wanted_fields = {"__ID_PREFIX", "__expected_parameters"}
+        for field in wanted_fields:
+            if f"_{cls.__name__}{field}" not in cls.__dict__.keys():
+                raise TypeError(f"This class {cls.__name__} doesn't have {field} field!")
     # Getters
     @property
     def name(self) -> str:
@@ -88,7 +91,7 @@ class Entity(ABC):
         :return: New id for instance
         :rtype: str
         """
-        return "-".join(prefixes) + "_" + str(cls.__next_id())
+        return "-".join(prefixes) + "-" + f"{cls.__next_id():05}"
 
 
     @classmethod
@@ -111,7 +114,29 @@ class Entity(ABC):
         :return: incremented id_counter by 1
         :rtype: int
         """
-        if not hasattr(cls, f"_{cls.__name__}__id_counter"):
-            raise TypeError("This class doesn't have an id counter!")
-        cls.__id_counter += 1
-        return cls.__id_counter
+        wanted_field = f"_id_counter"
+        if not hasattr(cls, wanted_field):
+            raise TypeError(f"This class {cls.__name__} doesn't have an id counter!")
+        cls._id_counter += 1
+        return cls._id_counter
+
+
+    @classmethod
+    def __load_parameters(cls) -> dict[str, type]:
+        wanted_field = "__expected_parameters"
+        complete_dict = {}
+        for base in reversed(cls.__mro__):
+            if hasattr(base, f"_{base.__name__}{wanted_field}"):
+                complete_dict.update(getattr(base, f"_{base.__name__}{wanted_field}"))
+        return complete_dict
+
+
+    @staticmethod
+    def _check_parameters(given: dict[str, type], expected: dict[str, type]):
+        for key in given:
+            if key not in expected:
+                raise ValueError(f"Invalid parameter '{key}'\nPlease use valid parameters: {expected.keys()}")
+
+        for key, value in given.items():
+            if not isinstance(value, expected[key]):
+                raise ValueError(f"Value for parameter {key} is {value}, expected {expected[key]}")

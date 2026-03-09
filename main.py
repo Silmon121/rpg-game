@@ -1,7 +1,7 @@
 from controller import GameController as gc
 
-player = gc.create_player("Hans")
-player2 = gc.create_player("Simon")
+player = gc.create_player(name="Hans", hp=30)
+player2 = gc.create_player(name="Simon", hp=50)
 
 print(player)
 

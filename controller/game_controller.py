@@ -16,5 +16,5 @@ class GameController:
         pass
 
     @staticmethod
-    def create_player(name:str) -> Player:
-        return Player(name)
+    def create_player(**kwargs) -> Player:
+        return Player(**kwargs)
