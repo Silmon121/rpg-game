@@ -9,11 +9,14 @@ class Entity(ABC):
         "y": int,
         "name": str
     }
+    __WANTED_FIELDS: list[str] = ["__ID_PREFIX", "__expected_parameters"]
     _id_counter: int = 0
 
     def __init__(self, **kwargs):
+        # Safety check
         self.__expected_parameters = self.__load_parameters() # creating an instance copy of the __expected_parameters on a class level
-        self._check_parameters(given=kwargs, expected=self.__expected_parameters)
+        self.__check_parameters(given=kwargs, expected=self.__expected_parameters)
+
         # Assignment
         x = kwargs.get("x", None)
         if x is not None:
@@ -39,12 +42,15 @@ class Entity(ABC):
         return f"ENTITY INFO:\nID: {self._id}\nCode: {self._code}\nName: {self._name}\nX: {self.x}\nY: {self.y}"
 
     def __init_subclass__(cls):
-        super.__init_subclass__()
-        wanted_fields = {"__ID_PREFIX", "__expected_parameters"}
-        for field in wanted_fields:
+        super().__init_subclass__()
+        for field in cls.__WANTED_FIELDS:
             if f"_{cls.__name__}{field}" not in cls.__dict__.keys():
                 raise TypeError(f"This class {cls.__name__} doesn't have {field} field!")
+
     # Getters
+    @property
+    def id(self):
+        return self._id
     @property
     def name(self) -> str:
         return self._name
@@ -66,13 +72,11 @@ class Entity(ABC):
     @name.setter
     def name(self, value: str):
         self._name = value
-
     @x.setter
     def x(self, value: int):
         if value < 0:
             raise ValueError("x must be positive")
         self.__position[0] = value
-
     @y.setter
     def y(self, value: int):
         if value < 0:
@@ -132,7 +136,7 @@ class Entity(ABC):
 
 
     @staticmethod
-    def _check_parameters(given: dict[str, type], expected: dict[str, type]):
+    def __check_parameters(given: dict[str, type], expected: dict[str, type]):
         for key in given:
             if key not in expected:
                 raise ValueError(f"Invalid parameter '{key}'\nPlease use valid parameters: {expected.keys()}")

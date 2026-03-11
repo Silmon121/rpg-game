@@ -6,7 +6,11 @@ class Character(Entity, ABC):
     __expected_parameters: dict[str, type] = {
         "hp": int,
         "immortal": bool,
+        "strength": int,
+        "intelligence": int,
     }
+    __WANTED_FIELDS: list[str] = ["__MOVEMENT_RATION"]
+    __MOVEMENT_RATION = 1
     _max_health = 100
 
     def __init__(self, **kwargs):
@@ -19,20 +23,22 @@ class Character(Entity, ABC):
         self._hp = hp if hp is not None else self._max_health
         self._immortal = immortal
 
+        # abilities
+        self._strength = kwargs.get("strength", 0)
+        self._intelligence = kwargs.get("intelligence", 0)
+
+
 
     def __repr__(self):
         return super().__repr__() + f"\nCHARACTER INFO:\nMax HP: {self._max_health}\nHP: {self._hp}\nImmortal: {self._immortal}\n"
 
     def __init_subclass__(cls):
         super().__init_subclass__()
+        for field in cls.__WANTED_FIELDS:
+            if field not in cls.__dict__:
+                raise TypeError(f"This class {cls.__name__} doesn't have {field} field!")
 
-
-    @abstractmethod
-    def move(self):
-        pass
-
-    @abstractmethod
-    def attack(self):
+    def _attack(self):
         pass
 
 

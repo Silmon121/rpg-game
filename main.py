@@ -1,9 +1,9 @@
-from controller import GameController as gc
+from controller import GameController
 
-player = gc.create_player(name="Hans", hp=30)
-player2 = gc.create_player(name="Simon", hp=50)
+game = GameController()
+
+# game
+player = game.create_player(name="Hans")
 
 print(player)
-
 print(repr(player))
-print(repr(player2))
