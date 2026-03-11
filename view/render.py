@@ -1,2 +1,0 @@
-class Render:
-    pass

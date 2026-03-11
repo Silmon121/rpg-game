@@ -1,9 +1,8 @@
-from controller import GameController as gc
+from controller import GameController
 
-player = gc.create_player("Hans")
-player2 = gc.create_player("Hans2")
+game = GameController()
 
-print(player)
+# game
+game.create_entity(e_name="player", name="Hans", x=0, y=0)
 
-print(repr(player))
-print(repr(player2))
+game.run()
