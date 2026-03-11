@@ -3,7 +3,6 @@ from controller import GameController
 game = GameController()
 
 # game
-player = game.create_player(name="Hans")
+game.create_entity(e_name="player", name="Hans", x=0, y=0)
 
-print(player)
-print(repr(player))
+game.run()

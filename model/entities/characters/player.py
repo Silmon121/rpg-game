@@ -1,6 +1,5 @@
 from model import Character
 
-
 class Player(Character):
     __ID_PREFIX = "P"
     __expected_parameters: dict[str, type] = {

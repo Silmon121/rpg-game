@@ -9,8 +9,7 @@ class Character(Entity, ABC):
         "strength": int,
         "intelligence": int,
     }
-    __WANTED_FIELDS: list[str] = ["__MOVEMENT_RATION"]
-    __MOVEMENT_RATION = 1
+    __WANTED_FIELDS: list[str] = []
     _max_health = 100
 
     def __init__(self, **kwargs):
@@ -35,8 +34,8 @@ class Character(Entity, ABC):
     def __init_subclass__(cls):
         super().__init_subclass__()
         for field in cls.__WANTED_FIELDS:
-            if field not in cls.__dict__:
-                raise TypeError(f"This class {cls.__name__} doesn't have {field} field!")
+            if f"_{cls.__name__}{field}" not in cls.__dict__:
+                raise TypeError(f"This class '{cls.__name__}' doesn't have {field} field!")
 
     def _attack(self):
         pass
@@ -45,7 +44,15 @@ class Character(Entity, ABC):
     @property
     def hp(self):
         return self._hp
-
     @property
     def mortal(self):
         return self._immortal
+    @property
+    def movement_ratio(self):
+        return self.__MOVEMENT_RATIO
+    @property
+    def strength(self):
+        return self._strength
+    @property
+    def intelligence(self):
+        return self._intelligence

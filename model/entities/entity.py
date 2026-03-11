@@ -34,7 +34,6 @@ class Entity(ABC):
         self._name = name or self._code
         self.__position = [x, y] if (x is not None and y is not None) and (x >= 0 and y >= 0) else [None, None]
 
-    @abstractmethod
     def __str__(self):
         pass
 
@@ -45,7 +44,7 @@ class Entity(ABC):
         super().__init_subclass__()
         for field in cls.__WANTED_FIELDS:
             if f"_{cls.__name__}{field}" not in cls.__dict__.keys():
-                raise TypeError(f"This class {cls.__name__} doesn't have {field} field!")
+                raise TypeError(f"This class '{cls.__name__}' doesn't have {field} field!")
 
     # Getters
     @property
