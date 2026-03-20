@@ -1,9 +1,9 @@
-from model import Entity
-from abc import ABC, abstractmethod
+from model.entities.movable_entity import MovableEntity
+from abc import ABC
 
-class Character(Entity, ABC):
+class Character(MovableEntity, ABC):
     __ID_PREFIX = "CH"
-    __expected_parameters: dict[str, type] = {
+    __EXPECTED_PARAMETERS: dict[str, type] = {
         "hp": int,
         "immortal": bool,
         "strength": int,
@@ -17,15 +17,17 @@ class Character(Entity, ABC):
         # Declaration
         hp = kwargs.get("hp", None)
         immortal = kwargs.get("immortal", False)
+        strength = kwargs.get("strength", 0)
+        intelligence = kwargs.get("intelligence", 0)
+
 
         # Initialization
         self._hp = hp if hp is not None else self._max_health
         self._immortal = immortal
 
         # abilities
-        self._strength = kwargs.get("strength", 0)
-        self._intelligence = kwargs.get("intelligence", 0)
-
+        self._strength = strength
+        self._intelligence = intelligence
 
 
     def __repr__(self):
@@ -37,9 +39,8 @@ class Character(Entity, ABC):
             if f"_{cls.__name__}{field}" not in cls.__dict__:
                 raise TypeError(f"This class '{cls.__name__}' doesn't have {field} field!")
 
-    def _attack(self):
+    def attack(self):
         pass
-
 
     @property
     def hp(self):
@@ -47,9 +48,6 @@ class Character(Entity, ABC):
     @property
     def mortal(self):
         return self._immortal
-    @property
-    def movement_ratio(self):
-        return self.__MOVEMENT_RATIO
     @property
     def strength(self):
         return self._strength

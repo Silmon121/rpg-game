@@ -1,9 +1,9 @@
-from model import Character
+from model.entities.characters.character import Character
 
 class NPC(Character):
 
     __ID_PREFIX = "NPC"
-    __expected_parameters = {
+    __EXPECTED_PARAMETERS: dict[str, type] = {
         "agro": bool
     }
 

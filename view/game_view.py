@@ -1,3 +1,49 @@
+from model import *
+from .sprite_loader import SpriteLoader
+from .main_menu_view import MainMenuView
+import config
+import pygame
+
+
 class GameView:
-    def __init__(self):
-        pass
+    def __init__(self, screen):
+        self.SCREEN = screen
+        self.sl = SpriteLoader()
+        self.mmv = MainMenuView(self.SCREEN)
+        self.__draw_grid()
+
+    def __draw_grid(self):
+        for y in range(config.GRID_HEIGHT):
+            for x in range(config.GRID_WIDTH):
+                rect = pygame.Rect(x * config.TILE_SIZE, y * config.TILE_SIZE,
+                                   config.TILE_SIZE, config.TILE_SIZE)
+                pygame.draw.rect(self.SCREEN, (50,50,50), rect, 1)
+
+
+    def render(self, player: Player, game_map: Map):
+        self.SCREEN.fill((0,0,0))
+
+        self.__draw_grid()
+        self.draw_map(game_map)
+        self.draw_player(player=player)
+
+        pygame.display.flip()
+
+    def draw_player(self, player: Player):
+        rect = pygame.Rect(
+            player.x * config.TILE_SIZE,
+            player.y * config.TILE_SIZE,
+            config.TILE_SIZE,
+            config.TILE_SIZE
+        )
+        pygame.draw.rect(self.SCREEN, (0, 255, 0), rect)
+
+    def draw_map(self, game_map: Map):
+        for row in game_map.grid:
+            for cell in row:
+                if not isinstance(cell, str):
+                    x,y = (cell.x * config.TILE_SIZE, cell.y * config.TILE_SIZE)
+                    if isinstance(cell, Wall):
+                        self.SCREEN.blit(self.sl.wall_sprite, (x, y))
+                    elif isinstance(cell, Floor):
+                        self.SCREEN.blit(self.sl.floor_sprite, (x, y))
