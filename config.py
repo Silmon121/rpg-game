@@ -17,3 +17,4 @@ RED = (255, 0, 0)
 #PLAYER_SPRITE = "assets/images/player1.png"
 WOODEN_WALL_SPRITE = "assets/images/walls/wooden_wall.png"
 WOODEN_FLOOR_SPRITE = "assets/images/floors/wood_floor.png"
+PLAYER_SPRITE = "assets/images/player/player.png"

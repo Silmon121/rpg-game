@@ -1,9 +1,10 @@
-from model import *
-from .sprite_loader import SpriteLoader
-from .main_menu_view import MainMenuView
 import config
 import pygame
 
+from config import TILE_SIZE
+from .sprite_loader import SpriteLoader
+from .main_menu_view import MainMenuView
+from model import *
 
 class GameView:
     def __init__(self, screen):
@@ -30,13 +31,7 @@ class GameView:
         pygame.display.flip()
 
     def draw_player(self, player: Player):
-        rect = pygame.Rect(
-            player.x * config.TILE_SIZE,
-            player.y * config.TILE_SIZE,
-            config.TILE_SIZE,
-            config.TILE_SIZE
-        )
-        pygame.draw.rect(self.SCREEN, (0, 255, 0), rect)
+        self.SCREEN.blit(self.sl.player_sprite, (player.x * TILE_SIZE, player.y * TILE_SIZE))
 
     def draw_map(self, game_map: Map):
         for row in game_map.grid:

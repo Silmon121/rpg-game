@@ -1,7 +1,11 @@
 import pygame
 import registry
+
+# Controller versions
 from .collision_controller import CollisionController
 from .player_controler import PlayerController
+
+
 from model import *
 from config import *
 from view import GameView
