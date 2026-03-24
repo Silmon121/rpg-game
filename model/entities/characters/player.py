@@ -1,8 +1,8 @@
-from model import Character
+from model.entities.characters.character import Character
 
 class Player(Character):
     __ID_PREFIX = "P"
-    __expected_parameters: dict[str, type] = {
+    __EXPECTED_PARAMETERS: dict[str, type] = {
 
     }
     _max_health = 120
@@ -12,8 +12,3 @@ class Player(Character):
         return f"Player\nName: {self._name}\nHP: {self._hp}\n"
     def __init_subclass__(cls):
         super().__init_subclass__()
-
-    def move(self):
-        pass
-    def attack(self):
-        pass

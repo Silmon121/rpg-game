@@ -1,21 +1,20 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Type
-
 
 class Entity(ABC):
     __ID_PREFIX: str = "E"
-    __expected_parameters: dict[str, type] = {
+    __EXPECTED_PARAMETERS: dict[str, type] = {
         "x": int,
         "y": int,
         "name": str
     }
-    __WANTED_FIELDS: list[str] = ["__ID_PREFIX", "__expected_parameters"]
+    __WANTED_FIELDS: list[str] = ["__ID_PREFIX", "__EXPECTED_PARAMETERS"]
     _id_counter: int = 0
 
     def __init__(self, **kwargs):
         # Safety check
-        self.__expected_parameters = self.__load_parameters() # creating an instance copy of the __expected_parameters on a class level
-        self.__check_parameters(given=kwargs, expected=self.__expected_parameters)
+        self._expected_parameters = self.__load_parameters() # creating an instance copy of the __expected_parameters on a class level
+        self.__check_parameters(given=kwargs, expected=self._expected_parameters)
 
         # Assignment
         x = kwargs.get("x", None)
@@ -126,7 +125,7 @@ class Entity(ABC):
 
     @classmethod
     def __load_parameters(cls) -> dict[str, type]:
-        wanted_field = "__expected_parameters"
+        wanted_field = "__EXPECTED_PARAMETERS"
         complete_dict = {}
         for base in reversed(cls.__mro__):
             if hasattr(base, f"_{base.__name__}{wanted_field}"):

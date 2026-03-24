@@ -1,5 +1,5 @@
 # rpg-game
 Seminar school project. A console video game.
 
-## Contains:
+## Contains
 entity inheritance chain desc

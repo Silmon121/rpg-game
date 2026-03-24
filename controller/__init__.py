@@ -1,2 +1,1 @@
 from .game_controller import GameController
-from .player_controler import PlayerController
