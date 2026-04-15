@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>RPG Game documentation &#8212; RPG Game alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=1f169f65"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Config Module" href="config.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="rpg-game-documentation">
+<h1>RPG Game documentation<a class="headerlink" href="#rpg-game-documentation" title="Link to this heading">¶</a></h1>
+<p>School project for Software Systems course at Tomas Bata University in Zlín.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="config.html#config.FPS"><code class="docutils literal notranslate"><span class="pre">FPS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html#config.GAME_TITLE"><code class="docutils literal notranslate"><span class="pre">GAME_TITLE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html#config.GRID_HEIGHT"><code class="docutils literal notranslate"><span class="pre">GRID_HEIGHT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html#config.GRID_WIDTH"><code class="docutils literal notranslate"><span class="pre">GRID_WIDTH</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html#config.SCREEN_HEIGHT"><code class="docutils literal notranslate"><span class="pre">SCREEN_HEIGHT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html#config.SCREEN_WIDTH"><code class="docutils literal notranslate"><span class="pre">SCREEN_WIDTH</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html#config.TILE_SIZE"><code class="docutils literal notranslate"><span class="pre">TILE_SIZE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="registry.html">Registry Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="registry.html#registry.game"><code class="docutils literal notranslate"><span class="pre">game</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller_rst/index.html">Controllers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="controller_rst/game_controller.html">Game Controller Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="controller_rst/game_controller.html#controller.game_controller.GameController"><code class="docutils literal notranslate"><span class="pre">GameController</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="controller_rst/game_controller.html#controller.game_controller.GameController.create_entity"><code class="docutils literal notranslate"><span class="pre">GameController.create_entity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="controller_rst/game_controller.html#controller.game_controller.GameController.run"><code class="docutils literal notranslate"><span class="pre">GameController.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="controller_rst/game_controller.html#controller.game_controller.GameController.select_map"><code class="docutils literal notranslate"><span class="pre">GameController.select_map()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="controller_rst/player_controller.html">Player Controller Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="controller_rst/player_controller.html#controller.player_controller.PlayerController"><code class="docutils literal notranslate"><span class="pre">PlayerController</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="controller_rst/player_controller.html#controller.player_controller.PlayerController.handle_input"><code class="docutils literal notranslate"><span class="pre">PlayerController.handle_input()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="controller_rst/collision_controller.html">Collision Controller Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="controller_rst/collision_controller.html#controller.collision_controller.CollisionController"><code class="docutils literal notranslate"><span class="pre">CollisionController</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="controller_rst/collision_controller.html#controller.collision_controller.CollisionController.check_collision"><code class="docutils literal notranslate"><span class="pre">CollisionController.check_collision()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="controller_rst/file_controller.html">File Controller Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="controller_rst/file_controller.html#controller.file_controller.FileController"><code class="docutils literal notranslate"><span class="pre">FileController</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="controller_rst/file_controller.html#controller.file_controller.FileController.get_maps_json"><code class="docutils literal notranslate"><span class="pre">FileController.get_maps_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">RPG Game</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registry.html">Registry Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller_rst/index.html">Controllers</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="config.html" title="next chapter">Config Module</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Silmon121.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

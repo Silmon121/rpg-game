@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>controller.game_controller &#8212; RPG Game alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=1f169f65"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for controller.game_controller</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">config</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">registry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.collision_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">CollisionController</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.player_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlayerController</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.file_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileController</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">model</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">view</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameView</span>
+
+<div class="viewcode-block" id="GameController">
+<a class="viewcode-back" href="../../controller_rst/game_controller.html#controller.game_controller.GameController">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GameController</span><span class="p">:</span>
+    <span class="n">__AVAILABLE_ENTITIES</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;player&quot;</span><span class="p">:</span> <span class="n">Player</span><span class="p">,</span>
+        <span class="s2">&quot;npc&quot;</span><span class="p">:</span> <span class="n">NPC</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__initialize_pygame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__initialize_controllers</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">maps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">get_maps_json</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_map</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__initialize_controllers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">FileController</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">PlayerController</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="n">CollisionController</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gv</span> <span class="o">=</span> <span class="n">GameView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="p">)</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__initialize_pygame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="n">SCREEN_WIDTH</span><span class="p">,</span> <span class="n">SCREEN_HEIGHT</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="n">GAME_TITLE</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GameController.run">
+<a class="viewcode-back" href="../../controller_rst/game_controller.html#controller.game_controller.GameController.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="n">FPS</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__handle_events</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gv</span><span class="o">.</span><span class="n">draw_player</span><span class="p">(</span><span class="n">player</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gv</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">player</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">,</span> <span class="n">game_map</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_map</span><span class="p">,</span> <span class="n">entities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="GameController.create_entity">
+<a class="viewcode-back" href="../../controller_rst/game_controller.html#controller.game_controller.GameController.create_entity">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">e_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__AVAILABLE_ENTITIES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown entity type: </span><span class="si">{</span><span class="n">e_name</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Possible types: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__AVAILABLE_ENTITIES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">entity_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__AVAILABLE_ENTITIES</span><span class="p">[</span><span class="n">e_name</span><span class="p">]</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="n">entity_class</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">entity</span></div>
+
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__handle_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">:</span>
+                <span class="k">match</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+                    <span class="k">case</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_ESCAPE</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pc</span><span class="o">.</span><span class="n">handle_input</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GameController.select_map">
+<a class="viewcode-back" href="../../controller_rst/game_controller.html#controller.game_controller.GameController.select_map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">current_map_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">)]</span>
+            <span class="n">game_map</span> <span class="o">=</span> <span class="n">Map</span><span class="p">(</span><span class="n">current_map_dict</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">current_map_dict</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__transform_map</span><span class="p">(</span><span class="n">game_map</span><span class="p">)</span></div>
+
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__transform_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">map</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+                    <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Wall</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+                    <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+                    <span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_entity</span><span class="p">(</span><span class="s2">&quot;player&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ninja&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="n">player</span>
+                    <span class="n">player</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">player</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">j</span>
+                    <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;LE&#39;</span><span class="p">:</span>
+                    <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_entity</span><span class="p">(</span><span class="s2">&quot;npc&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Elf&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+                    <span class="n">entity</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">entity</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">j</span>
+                    <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">map</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">RPG Game</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../config.html">Config Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../registry.html">Registry Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../controller_rst/index.html">Controllers</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Silmon121.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

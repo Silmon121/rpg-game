@@ -3,7 +3,7 @@ import pygame
 import config
 import registry
 from .collision_controller import CollisionController
-from .player_controler import PlayerController
+from .player_controller import PlayerController
 from .file_controller import FileController
 from model import *
 from config import *
