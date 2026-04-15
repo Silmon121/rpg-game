@@ -21,12 +21,13 @@ class GameView:
                 pygame.draw.rect(self.SCREEN, (50,50,50), rect, 1)
 
 
-    def render(self, player: Player, game_map: Map):
+    def render(self, entities: list, player: Player, game_map: Map):
         self.SCREEN.fill((0,0,0))
 
         self.__draw_grid()
         self.draw_map(game_map)
         self.draw_player(player=player)
+        self.draw_entities(entities)
 
         pygame.display.flip()
 
@@ -42,3 +43,15 @@ class GameView:
                         self.SCREEN.blit(self.sl.wall_sprite, (x, y))
                     elif isinstance(cell, Floor):
                         self.SCREEN.blit(self.sl.floor_sprite, (x, y))
+
+
+    def draw_entities(self, entities: list):
+        for entity in entities:
+            if isinstance(entity, NPC):
+                rect = pygame.Rect(
+                    entity.x * config.TILE_SIZE,
+                    entity.y * config.TILE_SIZE,
+                    config.TILE_SIZE,
+                    config.TILE_SIZE
+                )
+                pygame.draw.rect(self.SCREEN, (50, 50, 50), rect)
