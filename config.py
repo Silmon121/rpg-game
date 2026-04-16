@@ -1,6 +1,4 @@
-"""
-Config file where project constants are stored.
-"""
+"""Config file where project constants are stored."""
 
 # Game settings
 
