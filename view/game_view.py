@@ -1,4 +1,9 @@
-"""Module that handles all game rendering logic."""
+"""
+Game rendering module.
+
+Responsible for drawing the game world, including the map, player,
+entities, and debug visuals onto the screen using pygame.
+"""
 
 import config
 import pygame
@@ -10,24 +15,22 @@ from model import Player, Map, Wall, Floor, NPC
 
 class GameView:
     """
-    Represents a game view.
+    Handle rendering of the game world.
 
-    Handles all game rendering logic.
+    The GameView is responsible for drawing all visual elements,
+    including the tile map, player, NPCs, and debug grid.
+    It does not contain game logic or state updates.
     """
 
     def __init__(self, screen):
-        """
-        Initialize the game view.
-        """
+        """Initialize the game view."""
         self.SCREEN = screen
         self.sl = SpriteLoader()
         self.mmv = MainMenuView(self.SCREEN)
         self.__draw_grid()
 
     def __draw_grid(self):
-        """
-        Draw grid of tiles for debugging and testing.
-        """
+        """Draw grid of tiles for debugging and testing."""
         for y in range(config.GRID_HEIGHT):
             for x in range(config.GRID_WIDTH):
                 rect = pygame.Rect(
@@ -40,7 +43,10 @@ class GameView:
 
     def render(self, entities: list, player: Player, game_map: Map):
         """
-        Render the entire game view.
+        Render a full frame of the game.
+
+        This includes clearing the screen, drawing the debug grid,
+        rendering the map, player, and entities, then updating the display.
         """
         self.SCREEN.fill((0, 0, 0))
         self.__draw_grid()
@@ -57,7 +63,7 @@ class GameView:
         )
 
     def draw_map(self, game_map: Map):
-        """Draw the game map tiles."""
+        """Render the tile-based map."""
         for row in game_map.grid:
             for cell in row:
                 if not isinstance(cell, str):
@@ -70,7 +76,7 @@ class GameView:
                         self.SCREEN.blit(self.sl.floor_sprite, (x, y))
 
     def draw_entities(self, entities: list):
-        """Draw all non-tile entities."""
+        """Render dynamic entities such as NPCs."""
         for entity in entities:
             if isinstance(entity, NPC):
                 rect = pygame.Rect(
