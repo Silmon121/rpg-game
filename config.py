@@ -4,27 +4,27 @@ Config file where project constants are stored.
 
 # Game settings
 
+#: Title of the game.
 GAME_TITLE = "RPG Game"
-"""Title of the game."""
+#: Frame rate of the game.
 FPS = 60
-"""Frame rate of the game."""
 
 # Grid settings
 
+#: Size of one tile of a grid.
 TILE_SIZE = 64
-"""Size of one tile of a grid."""
 
+#: Amount of tiles in 'x' axis.
 GRID_WIDTH = 15
-"""Amount of tiles in 'x' axis."""
 
+#: Amount of tiles in 'y' axis.
 GRID_HEIGHT = 10
-"""Amount of tiles in 'y' axis."""
 
+#: Total screen width in pixels.
 SCREEN_WIDTH = TILE_SIZE * GRID_WIDTH
-"""Total screen width in pixels."""
 
+#: Total screen height in pixels.
 SCREEN_HEIGHT = TILE_SIZE * GRID_HEIGHT
-"""Total screen height in pixels."""
 
 # Colors (RGB)
 

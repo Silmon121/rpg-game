@@ -43,7 +43,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">view</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameView</span>
 
 <div class="viewcode-block" id="GameController">
-<a class="viewcode-back" href="../../controller_rst/game_controller.html#controller.game_controller.GameController">[docs]</a>
+<a class="viewcode-back" href="../../game_controller.html#controller.game_controller.GameController">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GameController</span><span class="p">:</span>
     <span class="n">__AVAILABLE_ENTITIES</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;player&quot;</span><span class="p">:</span> <span class="n">Player</span><span class="p">,</span>
@@ -80,7 +80,7 @@
 
 
 <div class="viewcode-block" id="GameController.run">
-<a class="viewcode-back" href="../../controller_rst/game_controller.html#controller.game_controller.GameController.run">[docs]</a>
+<a class="viewcode-back" href="../../game_controller.html#controller.game_controller.GameController.run">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="n">FPS</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000</span>
@@ -92,7 +92,7 @@
 
 
 <div class="viewcode-block" id="GameController.create_entity">
-<a class="viewcode-back" href="../../controller_rst/game_controller.html#controller.game_controller.GameController.create_entity">[docs]</a>
+<a class="viewcode-back" href="../../game_controller.html#controller.game_controller.GameController.create_entity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">e_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__AVAILABLE_ENTITIES</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown entity type: </span><span class="si">{</span><span class="n">e_name</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Possible types: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__AVAILABLE_ENTITIES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -118,7 +118,7 @@
 
 
 <div class="viewcode-block" id="GameController.select_map">
-<a class="viewcode-back" href="../../controller_rst/game_controller.html#controller.game_controller.GameController.select_map">[docs]</a>
+<a class="viewcode-back" href="../../game_controller.html#controller.game_controller.GameController.select_map">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">select_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">current_map_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">)]</span>
@@ -180,7 +180,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../config.html">Config Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../registry.html">Registry Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../main.html">Main Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../controller_rst/index.html">Controllers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../file_controller.html">File Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../collision_controller.html">Collision Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../player_controller.html">Player Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../game_controller.html">Game Controller Module</a></li>
 </ul>
 
 <div class="relations">

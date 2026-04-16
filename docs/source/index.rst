@@ -15,4 +15,13 @@ School project for Software Systems course at Tomas Bata University in Zlín.
    config
    registry
    main
-   controller_rst/index
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Logic Controllers:
+
+   file_controller
+   collision_controller
+   player_controller
+   game_controller

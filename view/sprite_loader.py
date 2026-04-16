@@ -1,3 +1,6 @@
+"""
+This module handles sprite loading.
+"""
 import config
 import pygame
 
