@@ -35,14 +35,31 @@
             
   <section id="module-controller.player_controller">
 <span id="player-controller-module"></span><h1>Player Controller Module<a class="headerlink" href="#module-controller.player_controller" title="Link to this heading">¶</a></h1>
+<p>Player input controller module.</p>
+<p>Handles keyboard input and translates it into
+player movement actions.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="controller.player_controller.PlayerController">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">controller.player_controller.</span></span><span class="sig-name descname"><span class="pre">PlayerController</span></span><a class="reference internal" href="_modules/controller/player_controller.html#PlayerController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.player_controller.PlayerController" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Translates input events into player actions.</p>
+<dl class="simple">
+<dt>Responsibilities:</dt><dd><ul class="simple">
+<li><p>Reads keyboard input</p></li>
+<li><p>Moves player entity accordingly</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="controller.player_controller.PlayerController.handle_input">
-<span class="sig-name descname"><span class="pre">handle_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/player_controller.html#PlayerController.handle_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.player_controller.PlayerController.handle_input" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handle_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/player_controller.html#PlayerController.handle_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.player_controller.PlayerController.handle_input" title="Link to this definition">¶</a></dt>
+<dd><p>Process a pygame input event and move the player.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – pygame event containing key input</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

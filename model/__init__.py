@@ -8,6 +8,7 @@ from .entities.movable_entity import MovableEntity
 from .maps.map import Map
 from .entities.objects.wall import Wall
 from .entities.objects.floor import Floor
+from .entities.objects.goal import Goal
 
 __all__ = [
     "Entity",
@@ -18,4 +19,5 @@ __all__ = [
     "Map",
     "Wall",
     "Floor",
+    "Goal",
 ]

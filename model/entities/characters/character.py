@@ -35,11 +35,13 @@ class Character(MovableEntity, ABC):
         "intelligence": int,
     }
 
-    #: Required subclass fields (currently unused).
-    __WANTED_FIELDS: list[str] = []
+    __WANTED_FIELDS: list[str] = ["__ID_PREFIX", "__EXPECTED_PARAMETERS"]
 
     #: Default maximum health.
     _max_health = 100
+
+    #: Default damage.
+    _damage = 20
 
     def __init__(self, **kwargs):
         """
@@ -89,20 +91,25 @@ class Character(MovableEntity, ABC):
     # Gameplay methods
     # =========================================================
 
-    def attack(self):
+    def attack(self, target):
         """
         Perform an attack action.
 
         To be implemented by subclasses.
         """
-        pass
+        target.health -= self._damage
+
+    def take_damage(self, attacker):
+        self._hp -= attacker.damage
+        print(self.health)
+
 
     # =========================================================
     # Properties
     # =========================================================
 
     @property
-    def hp(self) -> int:
+    def health(self) -> int:
         """Current health points."""
         return self._hp
 
@@ -120,3 +127,17 @@ class Character(MovableEntity, ABC):
     def intelligence(self) -> int:
         """Intelligence stat."""
         return self._intelligence
+
+    @property
+    def damage(self) -> int:
+        """Damage stat."""
+        return self._damage
+
+    @property
+    def max_health(self) -> int:
+        """Max health stat."""
+        return self._max_health
+
+    @health.setter
+    def health(self, value):
+        self._hp = value

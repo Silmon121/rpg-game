@@ -35,3 +35,7 @@ RED = (255, 0, 0)
 WOODEN_WALL_SPRITE = "assets/images/walls/wooden_wall.png"
 WOODEN_FLOOR_SPRITE = "assets/images/floors/wood_floor.png"
 PLAYER_SPRITE = "assets/images/player/player.png"
+LIGHT_ELF_SPRITE = "assets/images/enemies/light_elf.png"
+GOAL_DOOR_SPRITE = "assets/images/goal/goal_door.png"
+GOAL_DOOR_LOCKED_SPRITE = "assets/images/goal/goal_door_locked.png"
+SWORD_SPRITE = "assets/images/weapons/sword.png"

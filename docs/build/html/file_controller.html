@@ -35,14 +35,33 @@
             
   <section id="module-controller.file_controller">
 <span id="file-controller-module"></span><h1>File Controller Module<a class="headerlink" href="#module-controller.file_controller" title="Link to this heading">¶</a></h1>
+<p>File I/O controller module.</p>
+<p>Responsible for loading game data from external files,
+such as maps, configuration, and saved state.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="controller.file_controller.FileController">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">controller.file_controller.</span></span><span class="sig-name descname"><span class="pre">FileController</span></span><a class="reference internal" href="_modules/controller/file_controller.html#FileController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.file_controller.FileController" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Handles file-based operations for the game.</p>
+<dl class="simple">
+<dt>Available supports:</dt><dd><ul class="simple">
+<li><p>Loading map data from JSON files</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="controller.file_controller.FileController.get_maps_json">
 <span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_maps_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/file_controller.html#FileController.get_maps_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.file_controller.FileController.get_maps_json" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Load map data from JSON file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Parsed JSON data from data/maps.json</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict | list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
