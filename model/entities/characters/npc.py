@@ -59,6 +59,15 @@ class NPC(Character):
 
             self.move_timer = 0.0
 
+    def attack(self, target):
+        if self._agro:
+            """
+            Perform an attack action.
+
+            To be implemented by subclasses.
+            """
+            target.health -= self._damage
+
     # =========================================================
     # Properties
     # =========================================================

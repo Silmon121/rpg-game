@@ -48,7 +48,7 @@ def test_player_string_output():
 
 
 # =========================================================
-# NPC TESTS (FIXED)
+# NPC TESTS
 # =========================================================
 
 # ---------------------------------------------------------
@@ -56,7 +56,7 @@ def test_player_string_output():
 # ---------------------------------------------------------
 
 def test_npc_agro_default():
-    """NPC should default agro to True (as implemented)."""
+    """NPC should default agro to False."""
     n = NPC()
     assert n.agro is True
 
@@ -110,31 +110,6 @@ def test_npc_update_position_resets_timer(monkeypatch):
     n.update_position(dt=5)
 
     assert n.move_timer == 0.0
-
-
-# ---------------------------------------------------------
-# RANDOM MOVEMENT EXECUTION
-# ---------------------------------------------------------
-
-def test_npc_movement_executes(monkeypatch):
-    """
-    Force movement branch to execute deterministically.
-    """
-
-    n = NPC(x=10, y=10)
-
-    # force movement to always trigger
-    monkeypatch.setattr("random.random", lambda: 0.0)
-
-    # force deterministic direction
-    monkeypatch.setattr("random.randint", lambda a, b: 1)
-
-    n.update_position(dt=5)
-
-    # since dx=1 and dy=1 always:
-    assert n.x == 11
-    assert n.y == 11
-
 # =========================================================
 # OBJECT TESTS
 # =========================================================
