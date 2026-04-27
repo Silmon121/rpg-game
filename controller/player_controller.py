@@ -6,8 +6,6 @@ player movement actions.
 """
 
 import pygame
-import registry
-from model import NPC
 from model.entities.objects.weapons.sword import Sword
 
 

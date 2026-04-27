@@ -13,12 +13,13 @@ to avoid dependency on pygame runtime.
 """
 
 import pytest
-
+import json
+import io
 from controller.collision_controller import CollisionController
 from controller.file_controller import FileController
 from controller.player_controller import PlayerController
 from controller.game_controller import GameController
-
+from model import Map
 from model.entities.objects.wall import Wall
 from model.entities.objects.floor import Floor
 
@@ -47,7 +48,7 @@ def test_collision_within_bounds_allowed(monkeypatch):
     import registry as reg
     reg.game = DummyGame()
 
-    assert CollisionController.check_collision(5, 5) is True
+    assert CollisionController.check_collision(type[CollisionController], new_x=5, new_y=5) is True
 
 
 def test_collision_out_of_bounds_x(monkeypatch):
@@ -56,7 +57,7 @@ def test_collision_out_of_bounds_x(monkeypatch):
     monkeypatch.setattr("config.GRID_WIDTH", 10, raising=False)
     monkeypatch.setattr("config.GRID_HEIGHT", 10, raising=False)
 
-    assert CollisionController.check_collision(999, 5) is False
+    assert CollisionController.check_collision(type[CollisionController], new_x=999, new_y=5) is False
 
 
 def test_collision_out_of_bounds_y(monkeypatch):
@@ -65,7 +66,7 @@ def test_collision_out_of_bounds_y(monkeypatch):
     monkeypatch.setattr("config.GRID_WIDTH", 10, raising=False)
     monkeypatch.setattr("config.GRID_HEIGHT", 10, raising=False)
 
-    assert CollisionController.check_collision(5, 999) is False
+    assert CollisionController.check_collision(type[CollisionController], new_x=5, new_y=999) is False
 
 
 def test_collision_wall_block(monkeypatch):
@@ -85,7 +86,7 @@ def test_collision_wall_block(monkeypatch):
     import registry as reg
     reg.game = DummyGame()
 
-    assert CollisionController.check_collision(2, 2) is False
+    assert CollisionController.check_collision(type[CollisionController], new_x=2, new_y=2) is False
 
 
 # =========================================================
@@ -97,25 +98,17 @@ def test_get_maps_json_type(monkeypatch):
 
     sample_data = {"1": {"id": 1, "grid": []}}
 
+    fake_json = json.dumps(sample_data)
+
     def fake_open(*args, **kwargs):
-        class FakeFile:
-            def __enter__(self):
-                return self
-            def __exit__(self, *args):
-                return False
-            def read(self):
-                return ""
+        return io.StringIO(fake_json)
 
-        return FakeFile()
-
-    monkeypatch.setattr("builtins.open", lambda *a, **k: open)
-    monkeypatch.setattr(
-        "json.load",
-        lambda f: sample_data
-    )
+    monkeypatch.setattr("builtins.open", fake_open)
 
     data = FileController.get_maps_json()
+
     assert isinstance(data, dict)
+    assert data == sample_data
 
 
 # =========================================================
@@ -143,7 +136,7 @@ def test_player_controller_moves_w(monkeypatch):
 
     event = type("Event", (), {"key": pygame.K_w})
 
-    PlayerController.handle_input(event)
+    PlayerController.handle_input(type[PlayerController],event)
 
     assert reg.game.player.x == 1
     assert reg.game.player.y == 0
@@ -170,7 +163,7 @@ def test_player_controller_moves_d(monkeypatch):
 
     event = type("Event", (), {"key": pygame.K_d})
 
-    PlayerController.handle_input(event)
+    PlayerController.handle_input(type[PlayerController],event)
 
     assert reg.game.player.x == 2
     assert reg.game.player.y == 1
@@ -213,12 +206,7 @@ def test_map_transform_wall_and_floor():
     gc.entities = []
     gc.player = None
 
-    class DummyMap:
-        grid = [
-            ['1', '0']
-        ]
-
-    result = gc._GameController__transform_map(DummyMap())
+    result = gc._transform_map(Map(id=-100, grid=['1', '0']))
 
     assert isinstance(result.grid[0][0], Wall)
     assert isinstance(result.grid[0][1], Floor)

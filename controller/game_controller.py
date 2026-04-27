@@ -190,7 +190,8 @@ class GameController:
                     self.pc.handle_input(event)
 
     def __check_game_state(self):
-        if NPC in self.entities:
+        if any(isinstance(entity, NPC) for entity in self.entities):
+            self.level_cleared = False
             return
         self.level_cleared = True
     # =========================================================
@@ -217,7 +218,7 @@ class GameController:
 
         game_map = Map(current_map_dict["id"], current_map_dict["grid"])
 
-        self.current_map = self.__transform_map(game_map)
+        self.current_map = self._transform_map(game_map)
 
     def next_level(self):
         if self.level_cleared:
@@ -233,7 +234,7 @@ class GameController:
 
         self.select_map()
 
-    def __transform_map(self, game_map):
+    def _transform_map(self, game_map):
         """
         Convert raw map grid into game objects.
 

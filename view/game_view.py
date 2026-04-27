@@ -99,7 +99,16 @@ class GameView:
                 x = entity.x * config.TILE_SIZE
                 y = entity.y * config.TILE_SIZE
 
-                self.SCREEN.blit(self.sl.sword_sprite, (x, y))
+                rotated_sword = self.sl.sword_sprite
+
+                if self.gc.player.face_direction == (-1,0):
+                    rotated_sword = pygame.transform.rotate(rotated_sword, 180)
+                elif self.gc.player.face_direction == (0,1):
+                    rotated_sword = pygame.transform.rotate(rotated_sword, 270)
+                elif self.gc.player.face_direction == (0,-1):
+                    rotated_sword = pygame.transform.rotate(rotated_sword, 90)
+
+                self.SCREEN.blit(rotated_sword, (x, y))
 
     def draw_ui(self):
         """Draw the game UI."""
