@@ -12,12 +12,12 @@ These tests isolate controller logic using mocks
 to avoid dependency on pygame runtime.
 """
 
+import pygame
 import pytest
 import json
 import io
 from controller.collision_controller import CollisionController
 from controller.file_controller import FileController
-from controller.player_controller import PlayerController
 from controller.game_controller import GameController
 from model import Map
 from model.entities.objects.wall import Wall
@@ -115,60 +115,105 @@ def test_get_maps_json_type(monkeypatch):
 # PLAYER CONTROLLER TESTS
 # =========================================================
 
-def test_player_controller_moves_w(monkeypatch):
-    """W key should move player up."""
-
-    import pygame
-    import registry as reg
-
-    class DummyPlayer:
-        def __init__(self):
-            self.x = 1
-            self.y = 1
-        def move(self, dx, dy):
-            self.x += dx
-            self.y += dy
-
-    class DummyGame:
-        player = DummyPlayer()
-
-    reg.game = DummyGame()
-
-    event = type("Event", (), {"key": pygame.K_w})
-
-    PlayerController.handle_input(type[PlayerController],event)
-
-    assert reg.game.player.x == 1
-    assert reg.game.player.y == 0
+from controller.player_controller import PlayerController
 
 
-def test_player_controller_moves_d(monkeypatch):
-    """D key should move player right."""
+class DummyPlayer:
+    def __init__(self):
+        self.x = 1
+        self.y = 1
+        self.sword_attack = False
+        self.face_direction = (0, -1)
 
-    import pygame
-    import registry as reg
-
-    class DummyPlayer:
-        def __init__(self):
-            self.x = 1
-            self.y = 1
-        def move(self, dx, dy):
-            self.x += dx
-            self.y += dy
-
-    class DummyGame:
-        player = DummyPlayer()
-
-    reg.game = DummyGame()
-
-    event = type("Event", (), {"key": pygame.K_d})
-
-    PlayerController.handle_input(type[PlayerController],event)
-
-    assert reg.game.player.x == 2
-    assert reg.game.player.y == 1
+    def move(self, dx, dy):
+        self.x += dx
+        self.y += dy
 
 
+class DummyGC:
+    def __init__(self):
+        self.player = DummyPlayer()
+        self.entities = []
+        self.cc = type("CC", (), {"check_entity_collision": lambda *a, **k: None})()
+
+        def create_entity(*args, **kwargs):
+            class DummySword:
+                def __init__(self):
+                    self.id = "SW-1"
+                    self.x = kwargs.get("x", 0)
+                    self.y = kwargs.get("y", 0)
+                    self.ready = True
+
+            sword = DummySword()
+            self.entities.append(sword)
+            return sword
+
+        self.create_entity = create_entity
+
+        def restart_level():
+            self.restarted = True
+
+        self.restart_level = restart_level
+
+
+# ---------------------------------------------------------
+# MOVEMENT TESTS
+# ---------------------------------------------------------
+
+def test_player_controller_moves_w():
+    gc = DummyGC()
+    pc = PlayerController(gc)
+
+    event = type("Event", (), {"key": pygame.K_w})()
+
+    pc.handle_input(event)
+
+    assert gc.player.x == 1
+    assert gc.player.y == 0
+
+
+def test_player_controller_moves_d():
+    gc = DummyGC()
+    pc = PlayerController(gc)
+
+    event = type("Event", (), {"key": pygame.K_d})()
+
+    pc.handle_input(event)
+
+    assert gc.player.x == 2
+    assert gc.player.y == 1
+
+
+# ---------------------------------------------------------
+# SWORD ATTACK TEST
+# ---------------------------------------------------------
+
+def test_player_controller_sword_attack_creates_entity():
+    gc = DummyGC()
+    pc = PlayerController(gc)
+
+    event = type("Event", (), {"key": pygame.K_SPACE})()
+
+    pc.handle_input(event)
+
+    assert gc.player.sword_attack is True
+    assert len(gc.entities) == 1
+    assert gc.entities[0].id.startswith("SW")
+
+
+# ---------------------------------------------------------
+# PLAYER STATUS TEST
+# ---------------------------------------------------------
+
+def test_player_controller_restart_on_death():
+    gc = DummyGC()
+    pc = PlayerController(gc)
+
+    gc.player.health = 0
+
+    pc.check_player_status(dt=0.1)
+
+    assert hasattr(gc, "restarted")
 # =========================================================
 # GAME CONTROLLER TESTS
 # =========================================================
