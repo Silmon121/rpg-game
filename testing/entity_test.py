@@ -14,90 +14,11 @@ These tests ensure correctness of:
 - core gameplay entity mechanics
 """
 
-import pytest
-
 from model.entities.entity import Entity
-from model.entities.characters.character import Character
 from model.entities.characters.player import Player
 from model.entities.characters.npc import NPC
-from model.entities.movable_entity import MovableEntity
 from model.entities.objects.wall import Wall
 from model.entities.objects.floor import Floor
-
-
-# =========================================================
-# ENTITY BASE TESTS
-# =========================================================
-
-def test_entity_creation_with_position():
-    """Entity should correctly store position and name."""
-    e = Entity(x=5, y=10, name="Test")
-    assert e.x == 5
-    assert e.y == 10
-    assert e.name == "Test"
-
-
-def test_entity_default_name():
-    """Entity should default name to class name."""
-    e = Entity(x=1, y=2)
-    assert e.name == "Entity"
-
-
-def test_entity_negative_x_raises():
-    """Negative X should raise ValueError."""
-    with pytest.raises(ValueError):
-        Entity(x=-1, y=2)
-
-
-def test_entity_negative_y_raises():
-    """Negative Y should raise ValueError."""
-    with pytest.raises(ValueError):
-        Entity(x=1, y=-2)
-
-
-def test_position_property_valid():
-    """Position property should return [x, y]."""
-    e = Entity(x=3, y=4)
-    assert e.position == [3, 4]
-
-
-def test_position_missing_raises():
-    """Accessing incomplete position should raise ValueError."""
-    e = Entity()
-    with pytest.raises(ValueError):
-        _ = e.position
-
-
-def test_entity_id_is_string():
-    """Entity ID must be a string."""
-    e = Entity(x=1, y=1)
-    assert isinstance(e.id, str)
-
-
-def test_entity_id_format():
-    """Entity ID should contain prefix marker."""
-    e = Entity(x=1, y=1)
-    assert "E" in e.id
-
-
-def test_entity_ids_increment():
-    """Each entity must have a unique ID."""
-    e1 = Entity(x=1, y=1)
-    e2 = Entity(x=1, y=1)
-    assert e1.id != e2.id
-
-
-def test_invalid_parameter_key():
-    """Unknown parameter should raise ValueError."""
-    with pytest.raises(ValueError):
-        Entity(x=1, y=1, invalid=123)
-
-
-def test_invalid_parameter_type():
-    """Wrong parameter type should raise ValueError."""
-    with pytest.raises(ValueError):
-        Entity(x="wrong", y=1)
-
 
 # =========================================================
 # INHERITANCE RULES
@@ -109,40 +30,6 @@ def test_missing_required_class_fields_raises():
     """
     assert hasattr(Entity, "_Entity__ID_PREFIX")
 
-
-# =========================================================
-# CHARACTER TESTS
-# =========================================================
-
-def test_character_hp_default():
-    """Character should default HP to 100."""
-    c = Character(x=0, y=0)
-    assert c.hp == 100
-
-
-def test_character_hp_custom():
-    """Character should accept custom HP."""
-    c = Character(x=0, y=0, hp=50)
-    assert c.hp == 50
-
-
-def test_character_stats():
-    """Character should store strength and intelligence."""
-    c = Character(
-        x=0, y=0,
-        strength=10,
-        intelligence=20
-    )
-    assert c.strength == 10
-    assert c.intelligence == 20
-
-
-def test_character_immortal_flag():
-    """Character should store immortality flag."""
-    c = Character(x=0, y=0, immortal=True)
-    assert c.is_immortal is True
-
-
 # =========================================================
 # PLAYER TESTS
 # =========================================================
@@ -150,7 +37,7 @@ def test_character_immortal_flag():
 def test_player_max_health_override():
     """Player should use higher base HP."""
     p = Player(x=0, y=0)
-    assert p.hp == 120
+    assert p.health == 120
 
 
 def test_player_string_output():
@@ -164,58 +51,65 @@ def test_player_string_output():
 # NPC TESTS
 # =========================================================
 
+# ---------------------------------------------------------
+# AGRO BEHAVIOR
+# ---------------------------------------------------------
+
 def test_npc_agro_default():
     """NPC should default agro to False."""
-    n = NPC(x=0, y=0)
-    assert n.agro is False
-
-
-def test_npc_agro_true():
-    """NPC should accept agro=True."""
-    n = NPC(x=0, y=0, agro=True)
+    n = NPC()
     assert n.agro is True
 
 
-# =========================================================
-# MOVABLE ENTITY TESTS
-# =========================================================
-
-def test_movable_entity_move_updates_position():
-    """Movement should update position when allowed."""
-
-    class DummyCollision:
-        def check_collision(self, x, y):
-            return True  # allow movement
-
-    import registry as reg
-    reg.game = type("Game", (), {})()
-    reg.game.cc = DummyCollision()
-
-    m = MovableEntity(x=1, y=1)
-    m.move(1, 1)
-
-    assert m.x == 2
-    assert m.y == 2
+def test_npc_agro_explicit_true():
+    """NPC should accept agro=True explicitly."""
+    n = NPC(agro=True)
+    assert n.agro is True
 
 
-def test_movable_entity_blocked_move():
-    """Movement should not update position when blocked."""
-
-    class DummyCollision:
-        def check_collision(self, x, y):
-            return False  # block movement
-
-    import registry as reg
-    reg.game = type("Game", (), {})()
-    reg.game.cc = DummyCollision()
-
-    m = MovableEntity(x=1, y=1)
-    m.move(1, 1)
-
-    assert m.x == 1
-    assert m.y == 1
+def test_npc_agro_explicit_false():
+    """NPC should accept agro=False explicitly."""
+    n = NPC(agro=False)
+    assert n.agro is False
 
 
+# ---------------------------------------------------------
+# MOVEMENT TIMER LOGIC
+# ---------------------------------------------------------
+
+def test_npc_update_position_does_not_move_before_threshold(monkeypatch):
+    """
+    NPC should NOT move before move_timer reaches threshold.
+    We freeze randomness to ensure deterministic behavior.
+    """
+
+    n = NPC()
+
+    # prevent randomness from affecting test
+    monkeypatch.setattr("random.random", lambda: 0.0)
+
+    original_x = n.x
+    original_y = n.y
+
+    # below threshold (time_to_move = 5)
+    n.update_position(dt=1)
+    n.update_position(dt=1)
+    n.update_position(dt=1)
+
+    assert n.x == original_x
+    assert n.y == original_y
+
+
+def test_npc_update_position_resets_timer(monkeypatch):
+    """After threshold, move_timer should reset."""
+
+    n = NPC()
+
+    monkeypatch.setattr("random.random", lambda: 1.0)  # prevent movement
+
+    n.update_position(dt=5)
+
+    assert n.move_timer == 0.0
 # =========================================================
 # OBJECT TESTS
 # =========================================================

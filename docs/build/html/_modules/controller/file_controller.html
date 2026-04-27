@@ -31,20 +31,44 @@
           <div class="body" role="main">
             
   <h1>Source code for controller.file_controller</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">File I/O controller module.</span>
+
+<span class="sd">Responsible for loading game data from external files,</span>
+<span class="sd">such as maps, configuration, and saved state.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
 
 <div class="viewcode-block" id="FileController">
 <a class="viewcode-back" href="../../file_controller.html#controller.file_controller.FileController">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileController</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles file-based operations for the game.</span>
+
+<span class="sd">    Available supports:</span>
+<span class="sd">        - Loading map data from JSON files</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the file controller.&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="FileController.get_maps_json">
 <a class="viewcode-back" href="../../file_controller.html#controller.file_controller.FileController.get_maps_json">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_maps_json</span><span class="p">():</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;data/maps.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load map data from JSON file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict | list:</span>
+<span class="sd">                Parsed JSON data from data/maps.json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;data/maps.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">data</span></div>
 </div>
 
@@ -81,7 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../registry.html">Registry Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../main.html">Main Module</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Logic Controllers:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../file_controller.html">File Controller Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../collision_controller.html">Collision Controller Module</a></li>
@@ -114,7 +138,7 @@
       &#169;2026, Silmon121.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
     </div>

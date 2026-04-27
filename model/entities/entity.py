@@ -72,7 +72,7 @@ class Entity(ABC):
         self._code = self.__class__.__name__.title()
         self._name = name or self._code
 
-        self.__position = (
+        self._position = (
             [x, y]
             if x is not None and y is not None and x >= 0 and y >= 0
             else [None, None]
@@ -137,23 +137,23 @@ class Entity(ABC):
         Raises:
             ValueError: If position is not fully initialized.
         """
-        for item in self.__position:
+        for item in self._position:
             if item is None:
                 raise ValueError(
                     f"Position is missing for entity "
                     f"{self._id} : {self._code} : {self._name}"
                 )
-        return self.__position
+        return self._position
 
     @property
     def x(self) -> int:
         """X coordinate."""
-        return self.__position[0]
+        return self._position[0]
 
     @property
     def y(self) -> int:
         """Y coordinate."""
-        return self.__position[1]
+        return self._position[1]
 
     # =========================================================
     # Setters
@@ -169,14 +169,14 @@ class Entity(ABC):
         """Set X coordinate (must be >= 0)."""
         if value < 0:
             raise ValueError("x must be positive")
-        self.__position[0] = value
+        self._position[0] = value
 
     @y.setter
     def y(self, value: int):
         """Set Y coordinate (must be >= 0)."""
         if value < 0:
             raise ValueError("y must be positive")
-        self.__position[1] = value
+        self._position[1] = value
 
     # =========================================================
     # Class methods

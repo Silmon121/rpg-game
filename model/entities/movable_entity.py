@@ -37,6 +37,7 @@ class MovableEntity(Entity, ABC):
             **kwargs: Arguments passed to Entity constructor.
         """
         super().__init__(**kwargs)
+        self.face_direction = (1,0)
 
     def move(self, dx: int, dy: int):
         """
@@ -49,6 +50,16 @@ class MovableEntity(Entity, ABC):
         Notes:
             Movement is blocked if collision is detected.
         """
+
+        if dx == -1:
+            self.face_direction = (-1,0)
+        elif dx == 1:
+            self.face_direction = (1, 0)
+        elif dy == -1:
+            self.face_direction = (0, -1)
+        elif dy == 1:
+            self.face_direction = (0, 1)
+
         new_x = self.x + dx
         new_y = self.y + dy
 
@@ -56,3 +67,4 @@ class MovableEntity(Entity, ABC):
         if reg.game.cc.check_collision(new_x, new_y):
             self.x = new_x
             self.y = new_y
+        reg.game.cc.check_entity_collision(new_x, new_y, self)

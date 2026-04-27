@@ -26,12 +26,15 @@ class Player(Character):
     #: Expected parameters for Player initialization.
     __EXPECTED_PARAMETERS: dict[str, type] = {}
 
+    __WANTED_FIELDS: list[str] = []
+
     #: Player-specific maximum health.
     _max_health = 120
 
     def __init__(self, **kwargs):
         """Initialize a Player instance."""
         super().__init__(**kwargs)
+        self.sword_attack = False
 
     def __str__(self) -> str:
         """Return user-friendly string representation."""

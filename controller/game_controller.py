@@ -14,6 +14,10 @@ Responsible for:
 
 import pygame
 import registry
+from model.entities.characters.light_elf import LightElf
+from model.entities.objects.goal import Goal
+from model.entities.objects.weapons.sword import Sword
+from model.entities.objects.weapons.weapon import Weapon
 from .collision_controller import CollisionController
 from .player_controller import PlayerController
 from .file_controller import FileController
@@ -39,6 +43,8 @@ class GameController:
     __AVAILABLE_ENTITIES = {
         "player": Player,
         "npc": NPC,
+        "light_elf": LightElf,
+        "sword": Sword
     }
 
     def __init__(self):
@@ -51,10 +57,15 @@ class GameController:
             - Controllers (input, collision, file IO, rendering)
             - Game state variables
         """
+
+        #: Registry for remote access to the controller instance (e.g. for model)
         registry.game = self
 
         self.__initialize_pygame()
         self.__initialize_controllers()
+
+        self.level_time = 0.0
+        self.level_cleared = False
 
         self.maps = self.fc.get_maps_json()
         self.current_map = None
@@ -78,9 +89,9 @@ class GameController:
             - GameView: rendering system
         """
         self.fc = FileController()
-        self.pc = PlayerController()
-        self.cc = CollisionController()
-        self.gv = GameView(self.SCREEN)
+        self.pc = PlayerController(self)
+        self.cc = CollisionController(self)
+        self.gv = GameView(self)
 
     def __initialize_pygame(self):
         """Initialize pygame and create the main game window."""
@@ -104,15 +115,12 @@ class GameController:
         """
         while self.running:
             dt = self.clock.tick(FPS) / 1000  # delta time (currently unused)
-
+            self.level_time += dt
+            self.__update_entities(dt)
+            self.__check_game_state()
             self.__handle_events()
-
-            self.gv.draw_player(player=self.player)
-            self.gv.render(
-                player=self.player,
-                game_map=self.current_map,
-                entities=self.entities
-            )
+            self.pc.check_player_status(dt)
+            self.gv.render()
 
         pygame.quit()
 
@@ -146,6 +154,15 @@ class GameController:
         self.entities.append(entity)
         return entity
 
+    def __update_entities(self, dt):
+        for entity in self.entities:
+            if not isinstance(entity, Weapon):
+                if entity.health <= 0:
+                    self.entities.remove(entity)
+                    continue
+                if isinstance(entity, NPC):
+                    entity.update_position(dt)
+
     # =========================================================
     # Event handling
     # =========================================================
@@ -172,6 +189,11 @@ class GameController:
                 if self.player is not None:
                     self.pc.handle_input(event)
 
+    def __check_game_state(self):
+        if any(isinstance(entity, NPC) for entity in self.entities):
+            self.level_cleared = False
+            return
+        self.level_cleared = True
     # =========================================================
     # Map system
     # =========================================================
@@ -183,12 +205,36 @@ class GameController:
         Converts JSON map data into Map object and transforms
         tile data into game entities (walls, floors, NPCs, player).
         """
-        if self.level > 0:
-            current_map_dict = self.maps[str(self.level)]
-            game_map = Map(current_map_dict["id"], current_map_dict["grid"])
-            self.current_map = self.__transform_map(game_map)
+        self.maps = self.fc.get_maps_json()
 
-    def __transform_map(self, map):
+        if self.level <= 0:
+            return
+
+        current_map_dict = self.maps.get(str(self.level))
+
+        if current_map_dict is None:
+            print(f"No map found for level {self.level}")
+            return
+
+        game_map = Map(current_map_dict["id"], current_map_dict["grid"])
+
+        self.current_map = self._transform_map(game_map)
+
+    def next_level(self):
+        if self.level_cleared:
+            self.level += 1
+            self.restart_level()
+
+    def restart_level(self):
+        self.level_cleared = False
+        self.level_time = 0
+
+        self.entities.clear()
+        self.player = None
+
+        self.select_map()
+
+    def _transform_map(self, game_map):
         """
         Convert raw map grid into game objects.
 
@@ -196,36 +242,42 @@ class GameController:
             '1' → Wall
             '0' → Floor
             '2' → Player spawn
-            'LE' → NPC spawn
+            'LE' → Light elf spawn
 
         Args:
-            map (Map): Raw map object
+            game_map (Map): Raw map object
 
         Returns:
             Map: Transformed map with entities placed
         """
-        for i in range(len(map.grid)):
-            for j in range(len(map.grid[0])):
 
-                cell = map.grid[i][j]
+        for i in range(len(game_map.grid)):
+            for j in range(len(game_map.grid[0])):
+
+                cell = game_map.grid[i][j]
 
                 if cell == '1':
-                    map.grid[i][j] = Wall(x=i, y=j)
+                    game_map.grid[i][j] = Wall(x=i, y=j)
 
                 elif cell == '0':
-                    map.grid[i][j] = Floor(x=i, y=j)
+                    game_map.grid[i][j] = Floor(x=i, y=j)
 
                 elif cell == '2':
                     player = self.create_entity("player", name="Ninja")
                     self.player = player
                     player.x = i
                     player.y = j
-                    map.grid[i][j] = Floor(x=i, y=j)
+                    game_map.grid[i][j] = Floor(x=i, y=j)
+                    if self.player is None:
+                        raise Exception("Map has no player spawn ('2')")
 
                 elif cell == 'LE':
-                    entity = self.create_entity("npc", name="Elf")
+                    entity = self.create_entity("light_elf", name="Elf")
                     entity.x = i
                     entity.y = j
-                    map.grid[i][j] = Floor(x=i, y=j)
+                    game_map.grid[i][j] = Floor(x=i, y=j)
 
-        return map
+                elif cell == 'G':
+                    game_map.grid[i][j] = Goal(x=i, y=j)
+
+        return game_map
