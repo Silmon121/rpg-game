@@ -121,19 +121,19 @@ def test_npc_movement_executes(monkeypatch):
     Force movement branch to execute deterministically.
     """
 
-    n = NPC()
+    n = NPC(x=10, y=10)
 
     # force movement to always trigger
     monkeypatch.setattr("random.random", lambda: 0.0)
-    monkeypatch.setattr("random.randint", lambda a, b: 1)
 
-    old_x = n.x
-    old_y = n.y
+    # force deterministic direction
+    monkeypatch.setattr("random.randint", lambda a, b: 1)
 
     n.update_position(dt=5)
 
-    # should have moved (dx=1, dy=1 after logic)
-    assert (n.x, n.y) != (old_x, old_y)
+    # since dx=1 and dy=1 always:
+    assert n.x == 11
+    assert n.y == 11
 
 # =========================================================
 # OBJECT TESTS

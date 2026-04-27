@@ -251,7 +251,7 @@ def test_map_transform_wall_and_floor():
     gc.entities = []
     gc.player = None
 
-    result = gc._transform_map(Map(id=-100, grid=['1', '0']))
+    result = gc._transform_map(Map(id=-100, grid=[['1', '0']]))
 
     assert isinstance(result.grid[0][0], Wall)
     assert isinstance(result.grid[0][1], Floor)
