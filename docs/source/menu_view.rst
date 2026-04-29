@@ -1,7 +1,7 @@
-File Controller Module
+Menu View Module
 ======================
 
-.. automodule:: controller.file_controller
+.. automodule:: view.menu_view
     :members:
     :undoc-members:
     :private-members:

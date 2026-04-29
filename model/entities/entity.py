@@ -50,7 +50,7 @@ class Entity(ABC):
             ValueError: If invalid parameters
             or negative coordinates are provided
         """
-        # Safety check: validate parameters against expected schema
+        # Validate parameters against expected schema
         self._expected_parameters = (
             self.__load_parameters())
         self.__check_parameters(given=kwargs,
