@@ -39,7 +39,7 @@ class Direction:
 
 # Colors (RGB)
 class Color:
-    """Define the color enum."""
+    """Color variant class"""
     WHITE = (255,255,255)
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
