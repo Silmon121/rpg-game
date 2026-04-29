@@ -49,13 +49,15 @@ class NPC(Character):
 
         if self.move_timer >= self._time_to_move:
             if random.random() < self._prob_to_move:
-                dx = random.randint(0, 1)
-                dy = random.randint(0, 1)
-
-                dx = -1 if dx == 0 else 1
-                dy = -1 if dy == 0 else 1
-
-                self.move(dx,dy)
+                axis_prob = random.randint(0, 1)
+                if axis_prob == 0:
+                    dx = random.randint(0, 1)
+                    dx = -1 if dx == 0 else 1
+                    self.move(dx, 0)
+                elif axis_prob == 1:
+                    dy = random.randint(0, 1)
+                    dy = -1 if dy == 0 else 1
+                    self.move(0, dy)
 
             self.move_timer = 0.0
 

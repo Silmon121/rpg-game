@@ -7,7 +7,7 @@ entities, and debug visuals onto the screen using pygame.
 
 import pygame
 from config import TILE_SIZE, GRID_HEIGHT, GRID_WIDTH, Direction
-from model import Wall, Floor, LightElf, Goal, Sword
+from model import Wall, Floor, LightElf, Goal, Sword, Orc, Human
 from .sprite_loader import SpriteLoader
 from .menu_view import MenuView
 
@@ -103,6 +103,15 @@ class GameView:
                 y = entity.y * TILE_SIZE
 
                 self.SCREEN.blit(self.sl.light_elf_sprite, (x, y))
+            elif isinstance(entity, Orc):
+                x = entity.x * TILE_SIZE
+                y = entity.y * TILE_SIZE
+                self.SCREEN.blit(self.sl.orc_sprite, (x, y))
+            elif isinstance(entity, Human):
+                x = entity.x * TILE_SIZE
+                y = entity.y * TILE_SIZE
+
+                self.SCREEN.blit(self.sl.human_sprite, (x, y))
             elif isinstance(entity, Sword):
                 x = entity.x * TILE_SIZE
                 y = entity.y * TILE_SIZE

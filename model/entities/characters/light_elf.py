@@ -16,10 +16,10 @@ class LightElf(NPC):
     _max_health = 80
 
     #: Light Elf dmg
-    _damage: int = 10
+    _damage: int = 15
 
     #: Time limit for entity to move
-    _time_to_move = 3
+    _time_to_move = 2.5
 
     #: Probability to move
     _prob_to_move = 0.75
@@ -27,9 +27,6 @@ class LightElf(NPC):
     def __init__(self, **kwargs):
         """
         Initialize an NPC entity.
-
-        Args:
-
         """
         super().__init__(**kwargs)
 

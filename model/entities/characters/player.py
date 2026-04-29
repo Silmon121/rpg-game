@@ -28,8 +28,8 @@ class Player(Character):
 
     __WANTED_FIELDS: list[str] = []
 
-    #: Player-specific maximum health.
-    _max_health = 120
+    #: Player maximum health.
+    _max_health = 100
 
     def __init__(self, **kwargs):
         """Initialize a Player instance."""
