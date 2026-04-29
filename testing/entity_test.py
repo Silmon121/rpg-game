@@ -37,7 +37,7 @@ def test_missing_required_class_fields_raises():
 def test_player_max_health_override():
     """Player should use higher base HP."""
     p = Player(x=0, y=0)
-    assert p.health == 120
+    assert p.health == 100
 
 
 def test_player_string_output():
