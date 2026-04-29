@@ -23,3 +23,7 @@ class SpriteLoader:
                                  .load(config.GOAL_DOOR_LOCKED_SPRITE).convert_alpha())
         self.sword_sprite = (pygame.image
                               .load(config.SWORD_SPRITE).convert_alpha())
+        self.human_sprite = (pygame.image
+                              .load(config.HUMAN_SPRITE).convert_alpha())
+        self.orc_sprite = (pygame.image
+                              .load(config.ORC_SPRITE).convert_alpha())

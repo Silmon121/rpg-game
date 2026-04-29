@@ -31,8 +31,6 @@ class Character(MovableEntity, ABC):
     __EXPECTED_PARAMETERS: dict[str, type] = {
         "hp": int,
         "immortal": bool,
-        "strength": int,
-        "intelligence": int,
     }
 
     __WANTED_FIELDS: list[str] = ["__ID_PREFIX", "__EXPECTED_PARAMETERS"]
@@ -58,14 +56,10 @@ class Character(MovableEntity, ABC):
         # Extract values
         hp = kwargs.get("hp", None)
         immortal = kwargs.get("immortal", False)
-        strength = kwargs.get("strength", 0)
-        intelligence = kwargs.get("intelligence", 0)
 
         # Initialize stats
         self._hp = hp if hp is not None else self._max_health
         self._immortal = immortal
-        self._strength = strength
-        self._intelligence = intelligence
 
     def __repr__(self) -> str:
         """Developer-friendly representation of the character."""
@@ -101,7 +95,6 @@ class Character(MovableEntity, ABC):
 
     def take_damage(self, attacker):
         self._hp -= attacker.damage
-        print(self.health)
 
 
     # =========================================================
@@ -117,16 +110,6 @@ class Character(MovableEntity, ABC):
     def is_immortal(self) -> bool:
         """Whether the character is immortal."""
         return self._immortal
-
-    @property
-    def strength(self) -> int:
-        """Physical strength stat."""
-        return self._strength
-
-    @property
-    def intelligence(self) -> int:
-        """Intelligence stat."""
-        return self._intelligence
 
     @property
     def damage(self) -> int:

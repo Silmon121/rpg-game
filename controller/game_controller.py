@@ -14,7 +14,7 @@ Responsible for:
 
 import pygame
 import registry
-from model import Player, NPC, Wall, Floor, Map, Goal, LightElf, Weapon, Sword
+from model import Player, NPC, Wall, Floor, Map, Goal, LightElf, Weapon, Sword, Orc, Human
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, GAME_TITLE
 from view import GameView
 from .collision_controller import CollisionController
@@ -40,6 +40,8 @@ class GameController:
         "player": Player,
         "npc": NPC,
         "light_elf": LightElf,
+        "orc": Orc,
+        "human": Human,
         "sword": Sword
     }
 
@@ -149,15 +151,6 @@ class GameController:
         self.entities.append(entity)
         return entity
 
-    def __update_entities(self, dt):
-        for entity in self.entities:
-            if not isinstance(entity, Weapon):
-                if entity.health <= 0:
-                    self.entities.remove(entity)
-                    continue
-                if isinstance(entity, NPC):
-                    entity.update_position(dt)
-
     # =========================================================
     # Event handling
     # =========================================================
@@ -187,11 +180,25 @@ class GameController:
                         self.level = 1
                         self.select_map()
 
+    # =========================================================
+    # Game State
+    # =========================================================
+
     def __check_game_state(self):
         if any(isinstance(entity, NPC) for entity in self.entities):
             self.level_cleared = False
             return
         self.level_cleared = True
+
+    def __update_entities(self, dt):
+        for entity in self.entities:
+            if not isinstance(entity, Weapon):
+                if entity.health <= 0:
+                    self.entities.remove(entity)
+                    continue
+                if isinstance(entity, NPC):
+                    entity.update_position(dt)
+
     # =========================================================
     # Map system
     # =========================================================
@@ -208,7 +215,6 @@ class GameController:
         current_map_dict = self.maps.get(str(self.level))
 
         if current_map_dict is None:
-            print(f"No map found for level {self.level}")
             if self.level != -1:
                 self.level = -2
             return
@@ -254,10 +260,8 @@ class GameController:
 
                 if cell == '1':
                     game_map.grid[i][j] = Wall(x=i, y=j)
-
                 elif cell == '0':
                     game_map.grid[i][j] = Floor(x=i, y=j)
-
                 elif cell == '2':
                     player = self.create_entity("player", name="Ninja")
                     self.player = player
@@ -266,13 +270,21 @@ class GameController:
                     game_map.grid[i][j] = Floor(x=i, y=j)
                     if self.player is None:
                         raise Exception("Map has no player spawn ('2')")
-
                 elif cell == 'LE':
                     entity = self.create_entity("light_elf", name="Elf")
                     entity.x = i
                     entity.y = j
                     game_map.grid[i][j] = Floor(x=i, y=j)
-
+                elif cell == 'OR':
+                    entity = self.create_entity("orc", name="Orc")
+                    entity.x = i
+                    entity.y = j
+                    game_map.grid[i][j] = Floor(x=i, y=j)
+                elif cell == 'HU':
+                    entity = self.create_entity("human", name="Human")
+                    entity.x = i
+                    entity.y = j
+                    game_map.grid[i][j] = Floor(x=i, y=j)
                 elif cell == 'G':
                     game_map.grid[i][j] = Goal(x=i, y=j)
 
