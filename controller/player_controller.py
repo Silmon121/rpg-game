@@ -72,4 +72,4 @@ class PlayerController:
                                     + self.gc.player.y)
             swords = [entity for entity in self.gc.entities if "SW" in entity.id]
             for sword in swords:
-                self.gc.cc.check_entity_collision(sword.x, sword.y, sword)
+                self.gc.cc.check_collision(sword.x, sword.y, sword)

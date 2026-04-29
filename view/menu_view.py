@@ -45,8 +45,8 @@ class MenuView:
                        )
 
     def draw_outro(self):
-        self.screen.fill(Color.BLUE)
         """Draw the outro screen."""
+        self.screen.fill(Color.BLUE)
         self.draw_text("You have won the game!",
                        pygame.font.SysFont(
                            MAIN_MENU_TEXT_FONT,

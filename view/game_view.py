@@ -28,7 +28,6 @@ class GameView:
         self.sl = SpriteLoader()
         self.mv = MenuView(self)
 
-
     def render(self):
         """
         Render a full frame of the game.

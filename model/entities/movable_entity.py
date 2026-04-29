@@ -9,7 +9,6 @@ from abc import ABC
 from .entity import Entity
 import registry as reg
 
-
 class MovableEntity(Entity, ABC):
     """
     Abstract base class for entities that support movement.
@@ -64,7 +63,6 @@ class MovableEntity(Entity, ABC):
         new_y = self.y + dy
 
         # Collision check
-        if reg.game.cc.check_collision(new_x, new_y):
+        if reg.game.cc.check_collision(new_x, new_y, self):
             self.x = new_x
             self.y = new_y
-        reg.game.cc.check_entity_collision(new_x, new_y, self)

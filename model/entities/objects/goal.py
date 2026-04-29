@@ -1,5 +1,5 @@
 """Goal class module"""
-import registry
+
 from model.entities.entity import Entity
 
 class Goal(Entity):
