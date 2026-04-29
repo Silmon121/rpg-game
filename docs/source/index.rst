@@ -16,7 +16,6 @@ School project for Software Systems course at Tomas Bata University in Zlín.
    registry
    main
 
-
 .. toctree::
    :maxdepth: 2
    :caption: Logic Controllers:
@@ -25,3 +24,15 @@ School project for Software Systems course at Tomas Bata University in Zlín.
    collision_controller
    player_controller
    game_controller
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Model:
+
+.. toctree::
+   :maxdepth: 2
+   :caption: View:
+
+   game_view
+   menu_view
+   sprite_loader

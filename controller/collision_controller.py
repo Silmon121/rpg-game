@@ -5,12 +5,9 @@ Provides logic for validating movement and detecting
 collisions with world boundaries and entities.
 """
 
-from config import GRID_HEIGHT, GRID_WIDTH
-from model import Wall, Goal, NPC, Player
 import registry as reg
-from model.entities.objects.weapons.sword import Sword
-from model.entities.objects.weapons.weapon import Weapon
-
+from config import GRID_HEIGHT, GRID_WIDTH
+from model import Wall, Goal, NPC, Player, Weapon
 
 class CollisionController:
     """
@@ -54,7 +51,6 @@ class CollisionController:
                             self.gc.next_level()
                         else:
                             return False
-
 
         return True
 

@@ -14,16 +14,12 @@ Responsible for:
 
 import pygame
 import registry
-from model.entities.characters.light_elf import LightElf
-from model.entities.objects.goal import Goal
-from model.entities.objects.weapons.sword import Sword
-from model.entities.objects.weapons.weapon import Weapon
+from model import Player, NPC, Wall, Floor, Map, Goal, LightElf, Weapon, Sword
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, GAME_TITLE
+from view import GameView
 from .collision_controller import CollisionController
 from .player_controller import PlayerController
 from .file_controller import FileController
-from model import Player, NPC, Wall, Floor, Map
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, GAME_TITLE
-from view import GameView
 
 
 class GameController:
@@ -64,15 +60,15 @@ class GameController:
         self.__initialize_pygame()
         self.__initialize_controllers()
 
-        self.level_time = 0.0
-        self.level_cleared = False
-
-        self.maps = self.fc.get_maps_json()
-        self.current_map = None
         self.entities = []
-        self.level = 1
+        self.current_map = None
         self.player = None
+        self.maps = self.fc.get_maps_json()
+        self.level = -1 # -1 for main menu
+        self.select_map()
         self.running = True
+        self.level_cleared = False
+        self.game_paused = True
 
     # =========================================================
     # Initialization
@@ -115,7 +111,6 @@ class GameController:
         """
         while self.running:
             dt = self.clock.tick(FPS) / 1000  # delta time (currently unused)
-            self.level_time += dt
             self.__update_entities(dt)
             self.__check_game_state()
             self.__handle_events()
@@ -177,17 +172,20 @@ class GameController:
             - Player input delegation
         """
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
                 self.running = False
 
-            elif event.type == pygame.KEYDOWN:
-
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
 
-                if self.player is not None:
-                    self.pc.handle_input(event)
+                if self.level > 0:
+                    if self.player is not None:
+                        self.pc.handle_input(event)
+                elif self.level == -1:
+                    if event.key == pygame.K_SPACE:
+                        self.level = 1
+                        self.select_map()
 
     def __check_game_state(self):
         if any(isinstance(entity, NPC) for entity in self.entities):
@@ -207,13 +205,12 @@ class GameController:
         """
         self.maps = self.fc.get_maps_json()
 
-        if self.level <= 0:
-            return
-
         current_map_dict = self.maps.get(str(self.level))
 
         if current_map_dict is None:
             print(f"No map found for level {self.level}")
+            if self.level != -1:
+                self.level = -2
             return
 
         game_map = Map(current_map_dict["id"], current_map_dict["grid"])
@@ -227,7 +224,6 @@ class GameController:
 
     def restart_level(self):
         self.level_cleared = False
-        self.level_time = 0
 
         self.entities.clear()
         self.player = None

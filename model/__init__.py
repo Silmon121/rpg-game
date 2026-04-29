@@ -9,6 +9,9 @@ from .maps.map import Map
 from .entities.objects.wall import Wall
 from .entities.objects.floor import Floor
 from .entities.objects.goal import Goal
+from .entities.objects.weapons.weapon import Weapon
+from .entities.objects.weapons.sword import Sword
+from .entities.characters.light_elf import LightElf
 
 __all__ = [
     "Entity",
@@ -20,4 +23,7 @@ __all__ = [
     "Wall",
     "Floor",
     "Goal",
+    "Sword",
+    "Weapon",
+    "LightElf",
 ]
