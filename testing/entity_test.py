@@ -39,13 +39,11 @@ def test_player_max_health_override():
     p = Player(x=0, y=0)
     assert p.health == 100
 
-
 def test_player_string_output():
     """Player __str__ should return readable output."""
     p = Player(x=1, y=2)
     s = str(p)
     assert "Player" in s
-
 
 # =========================================================
 # NPC TESTS

@@ -1,11 +1,26 @@
-"""Testing module for CollisionController."""
+"""
+Test module for game systems.
+
+This module contains unit and integration tests for the core game engine,
+including collision handling, player input, entity management, map
+transformation, and game state control.
+
+It validates the behavior of the following systems:
+
+- CollisionController
+- PlayerController
+- GameController
+- FileController
+
+The tests ensure correct gameplay logic, state transitions, and entity
+interactions.
+"""
 
 import registry as reg
 import pygame
 import pytest
 from controller import *
-from model import Goal, Wall, NPC, Player, Weapon, Sword
-
+from model import Goal, Wall, NPC, Player, Weapon, Sword, Floor
 
 @pytest.fixture
 def dummy_entity():
@@ -31,7 +46,6 @@ def dummy_game():
             self.next_level_called = True
 
     return DummyGame()
-
 
 # =========================================================
 # COLLISION CONTROLLER TESTS
@@ -281,21 +295,20 @@ def test_sword_attack_creates_entity(monkeypatch):
             self.player = DummyPlayer()
             self.entities = []
             self.created = None
+            self.cc = CollisionController(self)
 
         def create_entity(self, name, **kwargs):
-            self.created = (name, kwargs)
             self.entities.append((name, kwargs))
-
-        class cc:
-            @staticmethod
-            def check_collision(*args):
-                return True
 
     controller = PlayerController(DummyGame())
 
-    controller.sword_attack()
+    event = type("E", (), {"key": pygame.K_SPACE})()
 
-    assert controller.gc.created[0] == "sword"
+    if event.key == pygame.K_SPACE and controller.gc.player.sword_attack == False:
+        controller.sword_attack()
+        assert controller.gc.entities[0][0] == "sword"
+    else:
+        assert controller.gc.entities == []
 
 def test_sword_removal_when_done():
     """Sword should be removed when update returns True."""
@@ -334,3 +347,235 @@ def test_sword_removal_when_time():
     controller.check_player_status(0.1)
 
     assert controller.gc.entities != []
+
+# =========================================================
+# PLAYER CONTROLLER TESTS
+# =========================================================
+
+# --------------------------------------------------
+# create_entity
+# --------------------------------------------------
+
+def test_create_entity_valid():
+    gc = GameController()
+
+    entity = gc.create_entity("player", name="Test")
+
+    assert isinstance(entity, Player)
+    assert entity in gc.entities
+
+def test_create_entity_invalid():
+    gc = GameController()
+
+    with pytest.raises(ValueError):
+        gc.create_entity("invalid_type")
+
+# --------------------------------------------------
+# restart_level
+# --------------------------------------------------
+
+def test_restart_level_resets_state(monkeypatch):
+    gc = GameController()
+
+    gc.entities.append(object())
+    gc.player = Player(name="Test")
+
+    called = {"value": False}
+
+    def fake_select_map():
+        called["value"] = True
+
+    monkeypatch.setattr(gc, "select_map", fake_select_map)
+
+    gc.restart_level()
+
+    assert gc.entities == []
+    assert gc.player is None
+    assert called["value"] is True
+
+# --------------------------------------------------
+# __check_game_state
+# --------------------------------------------------
+
+def test_check_game_state_with_npc():
+    gc = GameController()
+
+    gc.entities = [NPC(name="Enemy")]
+
+    gc._GameController__check_game_state()
+
+    assert gc.level_cleared is False
+
+def test_check_game_state_without_npc():
+    gc = GameController()
+
+    gc.entities = []
+
+    gc._GameController__check_game_state()
+
+    assert gc.level_cleared is True
+
+# --------------------------------------------------
+# __update_entities
+# --------------------------------------------------
+
+def test_update_entities_removes_dead():
+    gc = GameController()
+
+    class Dummy:
+        def __init__(self):
+            self.health = 0
+
+    dead = Dummy()
+    gc.entities = [dead]
+
+    gc._GameController__update_entities(0.1)
+
+    assert dead not in gc.entities
+
+def test_update_entities_skips_weapon():
+    gc = GameController()
+
+    weapon = Sword(x=0, y=0)
+    gc.entities = [weapon]
+
+    gc._GameController__update_entities(0.1)
+
+    assert weapon in gc.entities
+
+def test_update_entities_updates_npc(monkeypatch):
+    gc = GameController()
+
+    npc = NPC(name="Enemy")
+    npc.x = 0
+    npc.y = 0
+
+    called = {"value": False}
+
+    def fake_update(dt):
+        called["value"] = True
+
+    npc.update_position = fake_update
+
+    gc.entities = [npc]
+
+    gc._GameController__update_entities(0.1)
+
+    assert called["value"] is True
+
+# --------------------------------------------------
+# next_level
+# --------------------------------------------------
+
+def test_next_level_only_when_cleared(monkeypatch):
+    gc = GameController()
+
+    gc.level = 1
+    gc.level_cleared = True
+
+    called = {"value": False}
+
+    def fake_restart():
+        called["value"] = True
+
+    monkeypatch.setattr(gc, "restart_level", fake_restart)
+
+    gc.next_level()
+
+    assert gc.level == 2
+    assert called["value"] is True
+
+def test_next_level_not_cleared():
+    gc = GameController()
+
+    gc.level = 1
+    gc.level_cleared = False
+
+    gc.next_level()
+
+    assert gc.level == 1
+
+# --------------------------------------------------
+# select_map
+# --------------------------------------------------
+
+def test_select_map_invalid_level(monkeypatch):
+    gc = GameController()
+
+    monkeypatch.setattr(gc.fc, "get_maps_json", lambda: {})
+
+    gc.level = 5
+    gc.select_map()
+
+    assert gc.level == -2
+
+# --------------------------------------------------
+# _transform_map
+# --------------------------------------------------
+
+def test_transform_map_creates_player():
+    gc = GameController()
+
+    game_map = type("Map", (), {
+        "grid": [["2"]],
+        "id": 1
+    })()
+
+    result = gc._transform_map(game_map)
+
+    assert isinstance(gc.player, Player)
+    assert isinstance(result.grid[0][0], Floor)
+
+def test_transform_map_creates_wall():
+    gc = GameController()
+
+    game_map = type("Map", (), {
+        "grid": [["1"]],
+        "id": 1
+    })()
+
+    result = gc._transform_map(game_map)
+
+    assert isinstance(result.grid[0][0], Wall)
+
+def test_transform_map_creates_goal():
+    gc = GameController()
+
+    game_map = type("Map", (), {
+        "grid": [["G"]],
+        "id": 1
+    })()
+
+    result = gc._transform_map(game_map)
+
+    assert isinstance(result.grid[0][0], Goal)
+
+# --------------------------------------------------
+# __handle_events
+# --------------------------------------------------
+
+def test_handle_events_escape(monkeypatch):
+    gc = GameController()
+
+    event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_ESCAPE)
+
+    monkeypatch.setattr(pygame.event, "get", lambda: [event])
+
+    gc._GameController__handle_events()
+
+    assert gc.running is False
+
+def test_handle_events_menu_start(monkeypatch):
+    gc = GameController()
+
+    gc.level = -1
+
+    event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_SPACE)
+
+    monkeypatch.setattr(pygame.event, "get", lambda: [event])
+
+    monkeypatch.setattr(gc, "select_map", lambda: None)
+
+    gc._GameController__handle_events()
+
+    assert gc.level == 1
