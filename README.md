@@ -2,7 +2,7 @@
 
 Semestrální projekt do předmětu Pokročilé nástroje pro vývoj (PN).
 
-Jedná se o 2D dungeon crawler RPG hru vytvořenou v Pythonu pomocí knihovny **pygame**, postavenou na vlastním entity systému a MVC-like architektuře.
+Jedná se o 2D hru s prvky RPG vytvořenou v Pythonu pomocí knihovny **pygame**, postavenou na vlastním entity systému a MVC-like architektuře.
 
 ---
 
@@ -113,3 +113,4 @@ cd docs
 make html
 ```
 ## Pytest unit testing
+- Vzápětí jsou následně provedeny Unit testy přes modul pytest, které pokrývají většinu funkcionalit hry.

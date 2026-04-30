@@ -78,28 +78,70 @@ def test_npc_agro_explicit_false():
 # ---------------------------------------------------------
 
 
-def test_npc_update_position_does_not_move_before_threshold(monkeypatch):
-    """
-    NPC should NOT move before move_timer reaches threshold.
+def test_npc_moves_after_time(monkeypatch):
+    """NPC should move after a time delta."""
+    npc = NPC(agro=True)
 
-    We freeze randomness to ensure deterministic behavior.
-    """
-    n = NPC()
+    moves = []
 
-    # prevent randomness from affecting test
+    def fake_move(dx, dy):
+        moves.append((dx, dy))
+
+    npc.move = fake_move
+
+    # Force movement probability to always pass
     monkeypatch.setattr("random.random", lambda: 0.0)
 
-    original_x = n.x
-    original_y = n.y
+    # Force axis = x and direction = +1
+    monkeypatch.setattr("random.randint", lambda a, b: 0)
 
-    # below threshold (time_to_move = 5)
-    n.update_position(dt=1)
-    n.update_position(dt=1)
-    n.update_position(dt=1)
+    npc.update_position(dt=5.0)
 
-    assert n.x == original_x
-    assert n.y == original_y
+    assert len(moves) == 1
 
+def test_npc_does_not_move_before_time(monkeypatch):
+    """NPC should move after a time delta."""
+    npc = NPC(agro=True)
+
+    moves = []
+    npc.move = lambda dx, dy: moves.append((dx, dy))
+
+    npc.update_position(dt=1.0)
+
+    assert len(moves) == 0
+
+def test_npc_does_not_move_if_probability_fails(monkeypatch):
+    """Test NPC not moving if probability fails."""
+    npc = NPC(agro=True)
+
+    moves = []
+    npc.move = lambda dx, dy: moves.append((dx, dy))
+
+    # Force probability to fail
+    monkeypatch.setattr("random.random", lambda: 1.0)
+
+    npc.update_position(dt=5.0)
+
+    assert len(moves) == 0
+
+def test_npc_attack_when_agro():
+    """"""
+    npc = NPC(agro=True)
+    target = type("Target", (), {"health": 100})()
+
+    npc._damage = 10
+    npc.attack(target)
+
+    assert target.health == 90
+
+def test_npc_does_not_attack_when_not_agro():
+    npc = NPC(agro=False)
+    target = type("Target", (), {"health": 100})()
+
+    npc._damage = 10
+    npc.attack(target)
+
+    assert target.health == 100
 
 def test_npc_update_position_resets_timer(monkeypatch):
     """After threshold, move_timer should reset."""
