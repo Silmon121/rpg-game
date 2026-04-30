@@ -8,43 +8,24 @@ class SpriteLoader:
     """Handles sprite loading."""
 
     def __init__(self):
-        """
-        Initialize the sprite loader.
+        self.wall_sprite = None
+        self.floor_sprite = None
+        self.player_sprite = None
+        self.light_elf_sprite = None
+        self.goal_door_sprite = None
+        self.goal_door_locked_sprite = None
+        self.sword_sprite = None
+        self.human_sprite = None
+        self.orc_sprite = None
 
-        Object contains all available sprites.
-        """
-        self.wall_sprite = pygame.image.load(
-            config.WOODEN_WALL_SPRITE
-        ).convert_alpha()
-
-        self.floor_sprite = pygame.image.load(
-            config.WOODEN_FLOOR_SPRITE
-        ).convert_alpha()
-
-        self.player_sprite = pygame.image.load(
-            config.PLAYER_SPRITE
-        ).convert_alpha()
-
-        self.light_elf_sprite = pygame.image.load(
-            config.LIGHT_ELF_SPRITE
-        ).convert_alpha()
-
-        self.goal_door_sprite = pygame.image.load(
-            config.GOAL_DOOR_SPRITE
-        ).convert_alpha()
-
-        self.goal_door_locked_sprite = pygame.image.load(
-            config.GOAL_DOOR_LOCKED_SPRITE
-        ).convert_alpha()
-
-        self.sword_sprite = pygame.image.load(
-            config.SWORD_SPRITE
-        ).convert_alpha()
-
-        self.human_sprite = pygame.image.load(
-            config.HUMAN_SPRITE
-        ).convert_alpha()
-
-        self.orc_sprite = pygame.image.load(
-            config.ORC_SPRITE
-        ).convert_alpha()
+    def load(self):
+        """Load all sprites from disk."""
+        self.wall_sprite = pygame.image.load(config.WOODEN_WALL_SPRITE).convert_alpha()
+        self.floor_sprite = pygame.image.load(config.WOODEN_FLOOR_SPRITE).convert_alpha()
+        self.player_sprite = pygame.image.load(config.PLAYER_SPRITE).convert_alpha()
+        self.light_elf_sprite = pygame.image.load(config.LIGHT_ELF_SPRITE).convert_alpha()
+        self.goal_door_sprite = pygame.image.load(config.GOAL_DOOR_SPRITE).convert_alpha()
+        self.goal_door_locked_sprite = pygame.image.load(config.GOAL_DOOR_LOCKED_SPRITE).convert_alpha()
+        self.sword_sprite = pygame.image.load(config.SWORD_SPRITE).convert_alpha()
+        self.human_sprite = pygame.image.load(config.HUMAN_SPRITE).convert_alpha()
+        self.orc_sprite = pygame.image.load(config.ORC_SPRITE).convert_alpha()
