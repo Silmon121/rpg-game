@@ -1,6 +1,7 @@
 """View testing module"""
 
 from view.sprite_loader import SpriteLoader
+import pygame
 
 # =========================================================
 # GAME VIEW TESTS
@@ -37,8 +38,17 @@ def test_sprite_loader_initial_state():
 
 
 def test_sprite_loader_load_sets_all_sprites(monkeypatch):
-    """Test loading all sprites."""
     loader = SpriteLoader()
+
+    class FakeSurface:
+        def convert_alpha(self):
+            return self
+
+    def fake_load(path):
+        return FakeSurface()
+
+    monkeypatch.setattr(pygame.image, "load", fake_load)
+
     loader.load()
 
     assert loader.wall_sprite is not None
