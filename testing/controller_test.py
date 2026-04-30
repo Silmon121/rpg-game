@@ -22,6 +22,20 @@ import pytest
 from controller import *
 from model import Goal, Wall, NPC, Player, Weapon, Sword, Floor
 
+@pytest.fixture(autouse=True)
+def mock_pygame_images(monkeypatch):
+    """
+    Prevent pygame from loading real image assets during tests (CI-safe).
+    """
+
+    class DummySurface:
+        pass
+
+    monkeypatch.setattr(
+        "pygame.image.load",
+        lambda *args, **kwargs: DummySurface()
+    )
+
 @pytest.fixture
 def dummy_entity():
     class Dummy:
