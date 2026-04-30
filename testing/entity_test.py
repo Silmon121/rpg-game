@@ -99,6 +99,7 @@ def test_npc_moves_after_time(monkeypatch):
 
     assert len(moves) == 1
 
+
 def test_npc_does_not_move_before_time(monkeypatch):
     """NPC should move after a time delta."""
     npc = NPC(agro=True)
@@ -109,6 +110,7 @@ def test_npc_does_not_move_before_time(monkeypatch):
     npc.update_position(dt=1.0)
 
     assert len(moves) == 0
+
 
 def test_npc_does_not_move_if_probability_fails(monkeypatch):
     """Test NPC not moving if probability fails."""
@@ -124,8 +126,9 @@ def test_npc_does_not_move_if_probability_fails(monkeypatch):
 
     assert len(moves) == 0
 
+
 def test_npc_attack_when_agro():
-    """"""
+    """Test NPC attack when agro is True."""
     npc = NPC(agro=True)
     target = type("Target", (), {"health": 100})()
 
@@ -134,7 +137,9 @@ def test_npc_attack_when_agro():
 
     assert target.health == 90
 
+
 def test_npc_does_not_attack_when_not_agro():
+    """Test NPC not attacking when agro is False."""
     npc = NPC(agro=False)
     target = type("Target", (), {"health": 100})()
 
@@ -143,11 +148,13 @@ def test_npc_does_not_attack_when_not_agro():
 
     assert target.health == 100
 
+
 def test_npc_update_position_resets_timer(monkeypatch):
     """After threshold, move_timer should reset."""
     n = NPC()
 
-    monkeypatch.setattr("random.random", lambda: 1.0)  # prevent movement
+    # prevent movement
+    monkeypatch.setattr("random.random", lambda: 1.0)
 
     n.update_position(dt=5)
 
