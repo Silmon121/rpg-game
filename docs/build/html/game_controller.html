@@ -14,6 +14,7 @@
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Entity Module" href="entity.html" />
     <link rel="prev" title="Player Controller Module" href="player_controller.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -35,19 +36,18 @@
   <section id="module-controller.game_controller">
 <span id="game-controller-module"></span><h1>Game Controller Module<a class="headerlink" href="#module-controller.game_controller" title="Link to this heading">¶</a></h1>
 <p>Main game controller module.</p>
-<p>This is the central orchestrator of the game lifecycle.</p>
-<p>Responsible for:
-- Initializing pygame and game window
+<p>This module acts as the central orchestrator of the game lifecycle.</p>
+<p>It is responsible for:
+- Initializing pygame and the game window
 - Managing the main game loop
 - Handling user input events
-- Creating and storing entities
-- Loading and transforming maps
-- Coordinating rendering and game systems</p>
+- Creating and managing entities
+- Loading and transforming map data
+- Coordinating rendering and subsystem controllers</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="controller.game_controller.GameController">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">controller.game_controller.</span></span><span class="sig-name descname"><span class="pre">GameController</span></span><a class="reference internal" href="_modules/controller/game_controller.html#GameController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.game_controller.GameController" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Core controller of the entire game.</p>
+<dd><p>Core controller of the entire game.</p>
 <dl class="simple">
 <dt>Acts as the central coordinator between:</dt><dd><ul class="simple">
 <li><p>Input system</p></li>
@@ -57,38 +57,141 @@
 </ul>
 </dd>
 </dl>
-<p>Holds global game state and runs the main loop.</p>
+<p>Maintains global game state and executes the main game loop.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="controller.game_controller.GameController.__AVAILABLE_ENTITIES">
+<span class="sig-name descname"><span class="pre">__AVAILABLE_ENTITIES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'human':</span> <span class="pre">&lt;class</span> <span class="pre">'model.entities.characters.human.Human'&gt;,</span> <span class="pre">'light_elf':</span> <span class="pre">&lt;class</span> <span class="pre">'model.entities.characters.light_elf.LightElf'&gt;,</span> <span class="pre">'npc':</span> <span class="pre">&lt;class</span> <span class="pre">'model.entities.characters.npc.NPC'&gt;,</span> <span class="pre">'orc':</span> <span class="pre">&lt;class</span> <span class="pre">'model.entities.characters.orc.Orc'&gt;,</span> <span class="pre">'player':</span> <span class="pre">&lt;class</span> <span class="pre">'model.entities.characters.player.Player'&gt;,</span> <span class="pre">'sword':</span> <span class="pre">&lt;class</span> <span class="pre">'model.entities.objects.weapons.sword.Sword'&gt;}</span></span><a class="headerlink" href="#controller.game_controller.GameController.__AVAILABLE_ENTITIES" title="Link to this definition">¶</a></dt>
+<dd><p>Mapping of entity type names to their corresponding classes.</p>
+</dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py" id="controller.game_controller.GameController.create_entity">
-<span class="sig-name descname"><span class="pre">create_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/game_controller.html#GameController.create_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.game_controller.GameController.create_entity" title="Link to this definition">¶</a></dt>
-<dd><p>Create new entities.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>e_name</strong> (<em>str</em>) – Type of entity to create (e.g. ‘player’, ‘npc’)</p></li>
-<li><p><strong>**kwargs</strong> – Arguments passed to entity constructor</p></li>
+<dt class="sig sig-object py" id="controller.game_controller.GameController.__check_game_state">
+<span class="sig-name descname"><span class="pre">__check_game_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#controller.game_controller.GameController.__check_game_state" title="Link to this definition">¶</a></dt>
+<dd><p>Evaluate whether the current level is completed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.game_controller.GameController.__handle_events">
+<span class="sig-name descname"><span class="pre">__handle_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#controller.game_controller.GameController.__handle_events" title="Link to this definition">¶</a></dt>
+<dd><p>Process pygame input events.</p>
+<dl class="simple">
+<dt>Handles:</dt><dd><ul class="simple">
+<li><p>Window close event</p></li>
+<li><p>Escape key exit</p></li>
+<li><p>Player input delegation</p></li>
+<li><p>Main menu progression</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Created entity instance</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Entity</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If entity type is unknown</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="controller.game_controller.GameController.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/game_controller.html#GameController.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.game_controller.GameController.run" title="Link to this definition">¶</a></dt>
-<dd><p>Run the main game loop.</p>
+<dt class="sig sig-object py" id="controller.game_controller.GameController.__initialize_controllers">
+<span class="sig-name descname"><span class="pre">__initialize_controllers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#controller.game_controller.GameController.__initialize_controllers" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize subsystem controllers.</p>
+<dl class="simple">
+<dt>The following controllers are created:</dt><dd><ul class="simple">
+<li><p>FileController (data loading)</p></li>
+<li><p>PlayerController (player input handling)</p></li>
+<li><p>CollisionController (movement validation)</p></li>
+<li><p>GameView (rendering system)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.game_controller.GameController.__initialize_pygame">
+<span class="sig-name descname"><span class="pre">__initialize_pygame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#controller.game_controller.GameController.__initialize_pygame" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize pygame and create the main game window.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.game_controller.GameController.__update_entities">
+<span class="sig-name descname"><span class="pre">__update_entities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#controller.game_controller.GameController.__update_entities" title="Link to this definition">¶</a></dt>
+<dd><p>Update all active entities.</p>
 <dl class="simple">
 <dt>Handles:</dt><dd><ul class="simple">
+<li><p>NPC movement updates</p></li>
+<li><p>Weapon exclusion from generic update loop</p></li>
+<li><p>Entity cleanup on death</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.game_controller.GameController._transform_map">
+<span class="sig-name descname"><span class="pre">_transform_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/game_controller.html#GameController._transform_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.game_controller.GameController._transform_map" title="Link to this definition">¶</a></dt>
+<dd><p>Convert raw map grid into game entities.</p>
+<dl class="simple">
+<dt>Tile mapping:</dt><dd><p>‘1’ → Wall
+‘0’ → Floor
+‘2’ → Player spawn
+‘LE’ → Light Elf
+‘OR’ → Orc
+‘HU’ → Human
+‘G’ → Goal</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>game_map</strong> (<a class="reference internal" href="map.html#model.maps.map.Map" title="model.maps.map.Map"><em>Map</em></a>) – Raw map structure.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Transformed map with entities placed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="map.html#model.maps.map.Map" title="model.maps.map.Map">Map</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.game_controller.GameController.create_entity">
+<span class="sig-name descname"><span class="pre">create_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/game_controller.html#GameController.create_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.game_controller.GameController.create_entity" title="Link to this definition">¶</a></dt>
+<dd><p>Create and register a new entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>e_name</strong> (<em>str</em>) – Type of entity to create (e.g. ‘player’, ‘npc’)</p></li>
+<li><p><strong>**kwargs</strong> – Arguments passed to the entity constructor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Created entity instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="entity.html#model.entities.entity.Entity" title="model.entities.entity.Entity">Entity</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the entity type is not registered.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.game_controller.GameController.next_level">
+<span class="sig-name descname"><span class="pre">next_level</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/game_controller.html#GameController.next_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.game_controller.GameController.next_level" title="Link to this definition">¶</a></dt>
+<dd><p>Advance to the next level if the current one is cleared.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.game_controller.GameController.restart_level">
+<span class="sig-name descname"><span class="pre">restart_level</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/game_controller.html#GameController.restart_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.game_controller.GameController.restart_level" title="Link to this definition">¶</a></dt>
+<dd><p>Reset current level state and reload the map.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.game_controller.GameController.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/game_controller.html#GameController.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.game_controller.GameController.run" title="Link to this definition">¶</a></dt>
+<dd><p>Execute the main game loop.</p>
+<dl class="simple">
+<dt>The loop handles:</dt><dd><ul class="simple">
 <li><p>Frame timing</p></li>
+<li><p>Entity updates</p></li>
 <li><p>Input processing</p></li>
+<li><p>State evaluation</p></li>
 <li><p>Rendering</p></li>
 </ul>
 </dd>
@@ -99,8 +202,8 @@
 <dt class="sig sig-object py" id="controller.game_controller.GameController.select_map">
 <span class="sig-name descname"><span class="pre">select_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/game_controller.html#GameController.select_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.game_controller.GameController.select_map" title="Link to this definition">¶</a></dt>
 <dd><p>Load and select the current level map.</p>
-<p>Converts JSON map data into Map object and transforms
-tile data into game entities (walls, floors, NPCs, player).</p>
+<p>Converts JSON map data into a Map object and transforms
+grid cells into entities and terrain objects.</p>
 </dd></dl>
 
 </dd></dl>
@@ -149,12 +252,42 @@ tile data into game entities (walls, floors, NPCs, player).</p>
 </ul>
 </li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Model (General):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="movable_entity.html">Movable Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="map.html">Map Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Characters):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="character.html">Character Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="npc.html">NPC Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="light_elf.html">Light Elf Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="human.html">Human Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orc.html">Orc Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Objects):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="floor.html">Floor Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wall.html">Wall Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="goal.html">Goal Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weapon.html">Weapon Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sword.html">Sword Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">View:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="game_view.html">Game View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="menu_view.html">Menu View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sprite_loader.html">Sprite Loader Module</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="player_controller.html" title="previous chapter">Player Controller Module</a></li>
+      <li>Next: <a href="entity.html" title="next chapter">Entity Module</a></li>
   </ul></li>
 </ul>
 </div>

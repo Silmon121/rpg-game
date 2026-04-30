@@ -36,26 +36,25 @@
   <section id="module-controller.file_controller">
 <span id="file-controller-module"></span><h1>File Controller Module<a class="headerlink" href="#module-controller.file_controller" title="Link to this heading">¶</a></h1>
 <p>File I/O controller module.</p>
-<p>Responsible for loading game data from external files,
-such as maps, configuration, and saved state.</p>
+<p>Responsible for loading external game data,
+such as maps, configuration files, and saved state.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="controller.file_controller.FileController">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">controller.file_controller.</span></span><span class="sig-name descname"><span class="pre">FileController</span></span><a class="reference internal" href="_modules/controller/file_controller.html#FileController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.file_controller.FileController" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Handles file-based operations for the game.</p>
-<dl class="simple">
-<dt>Available supports:</dt><dd><ul class="simple">
-<li><p>Loading map data from JSON files</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Handle file-based operations for the game.</p>
+<p>This controller is responsible for loading and parsing
+external JSON data required by the game systems.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="controller.file_controller.FileController.get_maps_json">
 <span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_maps_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/file_controller.html#FileController.get_maps_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.file_controller.FileController.get_maps_json" title="Link to this definition">¶</a></dt>
 <dd><p>Load map data from JSON file.</p>
+<dl class="simple">
+<dt>The map file is read from:</dt><dd><p>data/maps.json</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Parsed JSON data from data/maps.json</p>
+<dd class="field-odd"><p>Parsed JSON structure containing map data.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict | list</p>
@@ -108,6 +107,35 @@ such as maps, configuration, and saved state.</p>
 <li class="toctree-l1"><a class="reference internal" href="collision_controller.html">Collision Controller Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="player_controller.html">Player Controller Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="game_controller.html">Game Controller Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (General):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="movable_entity.html">Movable Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="map.html">Map Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Characters):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="character.html">Character Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="npc.html">NPC Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="light_elf.html">Light Elf Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="human.html">Human Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orc.html">Orc Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Objects):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="floor.html">Floor Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wall.html">Wall Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="goal.html">Goal Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weapon.html">Weapon Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sword.html">Sword Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">View:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="game_view.html">Game View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="menu_view.html">Menu View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sprite_loader.html">Sprite Loader Module</a></li>
 </ul>
 
 <div class="relations">

@@ -4,6 +4,7 @@
 
 #: Title of the game.
 GAME_TITLE = "RPG Game"
+
 #: Frame rate of the game.
 FPS = 60
 
@@ -24,28 +25,33 @@ SCREEN_WIDTH = TILE_SIZE * GRID_WIDTH
 #: Total screen height in pixels.
 SCREEN_HEIGHT = TILE_SIZE * GRID_HEIGHT
 
+
 #: Angle values enum class
 class Direction:
-    """Define the direction enum."""
-    UP = (0,-1)
-    DOWN = (0,1)
-    LEFT = (-1,0)
-    RIGHT = (1,0)
+    """Define the direction."""
+
+    UP = (0, -1)
+    DOWN = (0, 1)
+    LEFT = (-1, 0)
+    RIGHT = (1, 0)
 
     UP_DEG = 90
     DOWN_DEG = 270
     LEFT_DEG = 180
     RIGHT_DEG = 0
 
+
 # Colors (RGB)
 class Color:
-    """Color variant class"""
-    WHITE = (255,255,255)
+    """Color variant class."""
+
+    WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
     YELLOW = (255, 255, 0)
+
 
 # Fonts
 MAIN_MENU_TEXT_FONT = "arialblack"

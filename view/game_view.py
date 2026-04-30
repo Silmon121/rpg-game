@@ -6,7 +6,7 @@ entities, and debug visuals onto the screen using pygame.
 """
 
 import pygame
-from config import TILE_SIZE, GRID_HEIGHT, GRID_WIDTH, Direction
+from config import TILE_SIZE, GRID_HEIGHT, GRID_WIDTH, Direction, Color
 from model import Wall, Floor, LightElf, Goal, Sword, Orc, Human
 from .sprite_loader import SpriteLoader
 from .menu_view import MenuView
@@ -17,17 +17,24 @@ class GameView:
     Handle rendering of the game world.
 
     The GameView is responsible for drawing all visual elements,
-    including the tile map, player, NPCs, and debug grid.
-    It does not contain game logic or state updates.
+    including the tile map, player, NPCs, HUD, and debug grid.
+
+    This class does not manage game logic or state updates.
     """
 
     def __init__(self, game_controller):
-        """Initialize the game view."""
+        """
+        Initialize GameView instance.
+
+        Parameters
+        ----------
+        game_controller : GameController
+            Controller providing game state, entities, and screen surface.
+        """
         self.gc = game_controller
         self.SCREEN = self.gc.SCREEN
         self.sl = SpriteLoader()
         self.mv = MenuView(self)
-
 
     def render(self):
         """
@@ -47,6 +54,12 @@ class GameView:
         pygame.display.flip()
 
     def _draw_level(self):
+        """
+        Render active game level.
+
+        The screen is cleared and all level components are drawn,
+        including map, player, HUD, and entities.
+        """
         self.SCREEN.fill((0, 0, 0))
         self.__draw_map()
         self.__draw_player()
@@ -54,7 +67,12 @@ class GameView:
         self.__draw_entities()
 
     def _draw_grid(self):
-        """Draw grid of tiles for debugging and testing."""
+        """
+        Render debug grid overlay.
+
+        A grid based on tile size is drawn over the screen to assist
+        with debugging and level design.
+        """
         for y in range(GRID_HEIGHT):
             for x in range(GRID_WIDTH):
                 rect = pygame.Rect(
@@ -68,7 +86,12 @@ class GameView:
                                  rect, 1)
 
     def __draw_map(self):
-        """Render the tile-based map."""
+        """
+        Render tile-based map.
+
+        The current map grid is iterated and corresponding tile sprites
+        are drawn based on tile type.
+        """
         game_map = self.gc.current_map
 
         if game_map is None:
@@ -94,7 +117,12 @@ class GameView:
                                              (x, y))
 
     def __draw_entities(self):
-        """Render dynamic entities such as NPCs ect."""
+        """
+        Render dynamic entities.
+
+        All active entities such as NPCs, enemies, and items
+        are rendered based on their type and position.
+        """
         entities = self.gc.entities
 
         for entity in entities:
@@ -131,7 +159,11 @@ class GameView:
                 self.SCREEN.blit(rotated_sword, (x, y))
 
     def __draw_player(self):
-        """Draw the player sprite."""
+        """
+        Render player sprite.
+
+        The player entity is drawn at its current grid position.
+        """
         player = self.gc.player
 
         if player is None:
@@ -142,7 +174,11 @@ class GameView:
         )
 
     def __draw_hud(self):
-        """Draw the game HUD."""
+        """
+        Render HUD elements.
+
+        The HUD currently includes the player health bar.
+        """
         if self.gc.player is not None:
             self.__draw_health_bar(self.SCREEN,
                                    0, 0,
@@ -152,16 +188,35 @@ class GameView:
 
     @staticmethod
     def __draw_health_bar(surface, x, y, width, height, current, maximum):
-        """Draw the health bar."""
+        """
+        Render a health bar.
+
+        Parameters
+        ----------
+        surface : pygame.Surface
+            Surface to draw on.
+        x : int
+            X position.
+        y : int
+            Y position.
+        width : int
+            Total width of the bar.
+        height : int
+            Height of the bar.
+        current : int
+            Current health value.
+        maximum : int
+            Maximum health value.
+        """
         # Ratio
         ratio = current / maximum
 
         # Background
         pygame.draw.rect(surface,
-                         (0, 0, 0),
+                         Color.BLACK,
                          (x, y, width, height))
 
         # Foreground
         pygame.draw.rect(surface,
-                         (255, 0, 0),
+                         Color.RED,
                          (x, y, width * ratio, height))

@@ -1,32 +1,46 @@
-"""Light elf npc class module"""
+"""
+Light elf NPC module.
+
+Define the LightElf class, representing a fast, lightly
+armored NPC with higher mobility and lower health.
+"""
 
 from model.entities.characters.npc import NPC
 
-class LightElf(NPC):
-    """Light elf npc class"""
 
-    #: Unique prefix for NPC entities.
+class LightElf(NPC):
+    """
+    Represent a Light Elf NPC entity.
+
+    Extend NPC with lightweight combat stats and increased
+    movement frequency.
+    """
+
+    #: Unique prefix for Light Elf NPC entities.
     __ID_PREFIX = "LE"
 
     #: Expected initialization parameters.
-    __EXPECTED_PARAMETERS: dict[str, type] = {
-    }
+    __EXPECTED_PARAMETERS: dict[str, type] = {}
 
-    #: Light Elf max health
+    #: Default maximum health value.
     _max_health = 80
 
-    #: Light Elf dmg
+    #: Default damage value.
     _damage: int = 15
 
-    #: Time limit for entity to move
+    #: Time interval between movement decisions.
     _time_to_move = 2.5
 
-    #: Probability to move
+    #: Probability of performing a movement action.
     _prob_to_move = 0.75
 
     def __init__(self, **kwargs):
         """
-        Initialize an NPC entity.
+        Initialize LightElf NPC instance.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to NPC constructor.
         """
         super().__init__(**kwargs)
-

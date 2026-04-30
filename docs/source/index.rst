@@ -27,7 +27,32 @@ School project for Software Systems course at Tomas Bata University in Zlín.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Model:
+   :caption: Model (General):
+
+   entity
+   movable_entity
+   map
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Model (Characters):
+
+   character
+   npc
+   player
+   light_elf
+   human
+   orc
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Model (Objects):
+
+   floor
+   wall
+   goal
+   weapon
+   sword
 
 .. toctree::
    :maxdepth: 2

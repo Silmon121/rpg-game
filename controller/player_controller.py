@@ -1,36 +1,46 @@
 """
 Player input controller module.
 
-Handles keyboard input and translates it into
-player movement actions.
+Handle keyboard input and translate it into player actions.
 """
 
 import pygame
-from model.entities.objects.weapons.sword import Sword
+from model import Sword
 
 
 class PlayerController:
     """
-    Translates input events into player actions.
+    Handle player input and state updates.
 
-    Responsibilities:
-        - Reads keyboard input
-        - Moves player entity accordingly
+    Translate input events into movement and combat actions.
     """
 
     def __init__(self, game_controller):
+        """
+        Initialize PlayerController instance.
+
+        Parameters
+        ----------
+        game_controller : GameController
+                Controller providing access to player, entities, and systems.
+        """
         self.gc = game_controller
 
     def handle_input(self, event):
         """
-        Process a pygame input event and move the player.
+        Process input event and update player actions.
 
-        Args:
-            event: pygame event containing key input
+        Parameters
+        ----------
+        event : pygame.event.Event
+            Input event containing key information.
         """
         player = self.gc.player
 
-        #: Safety check: ensure player position exists
+        if player is None:
+            return
+
+        # Ensure player position exists
         if player.x is None and player.y is None:
             return
 
@@ -47,29 +57,53 @@ class PlayerController:
                 case pygame.K_SPACE:
                     self.sword_attack()
 
-
-
     def check_player_status(self, dt):
-        if self.gc.player is not None:
-            if self.gc.player.health <= 0:
-                self.gc.restart_level()
-            if self.gc.player.sword_attack:
-                for entity in self.gc.entities:
-                    if isinstance(entity, Sword):
-                        if not entity.ready:
-                            entity.apply_cooldown(dt)
-                        if entity.ready:
-                            self.gc.entities.remove(entity)
-                            self.gc.player.sword_attack = False
+        """
+        Update player-related state.
 
+        Handle player death and active weapon entities.
+
+        Parameters
+        ----------
+        dt : float
+            Time delta used for updating cooldowns.
+        """
+        player = self.gc.player
+
+        if player is None:
+            return
+
+        if player.health <= 0:
+            self.gc.restart_level()
+
+        if player.sword_attack:
+            for entity in self.gc.entities[:]:
+                if isinstance(entity, Sword):
+                    if entity.update(dt):
+                        self.gc.entities.remove(entity)
+                        player.sword_attack = False
 
     def sword_attack(self):
-            self.gc.player.sword_attack = True
-            self.gc.create_entity("sword",
-                                  x=self.gc.player.face_direction[0]
-                                    + self.gc.player.x,
-                                  y= self.gc.player.face_direction[1]
-                                    + self.gc.player.y)
-            swords = [entity for entity in self.gc.entities if "SW" in entity.id]
-            for sword in swords:
-                self.gc.cc.check_entity_collision(sword.x, sword.y, sword)
+        """
+        Trigger sword attack action.
+
+        Spawn a sword entity in front of the player and
+        perform initial collision checks.
+        """
+        player = self.gc.player
+
+        player.sword_attack = True
+
+        self.gc.create_entity(
+            "sword",
+            x=player.face_direction[0] + player.x,
+            y=player.face_direction[1] + player.y,
+        )
+
+        swords = [
+            entity for entity in self.gc.entities
+            if isinstance(entity, Sword)
+        ]
+
+        for sword in swords:
+            self.gc.cc.check_collision(sword.x, sword.y, sword)

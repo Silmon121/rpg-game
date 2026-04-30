@@ -1,4 +1,4 @@
-"""View module imports."""
+"""View module package."""
 
 from .game_view import GameView
 

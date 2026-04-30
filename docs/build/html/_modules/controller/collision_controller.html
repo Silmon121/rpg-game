@@ -35,40 +35,60 @@
 <span class="sd">Collision system module.</span>
 
 <span class="sd">Provides logic for validating movement and detecting</span>
-<span class="sd">collisions with world boundaries and entities.</span>
+<span class="sd">collisions between entities, map boundaries, and world objects.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">GRID_HEIGHT</span><span class="p">,</span> <span class="n">GRID_WIDTH</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Wall</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">reg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Wall</span><span class="p">,</span> <span class="n">Goal</span><span class="p">,</span> <span class="n">NPC</span><span class="p">,</span> <span class="n">Player</span><span class="p">,</span> <span class="n">Weapon</span>
 
 
 <div class="viewcode-block" id="CollisionController">
 <a class="viewcode-back" href="../../collision_controller.html#controller.collision_controller.CollisionController">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CollisionController</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Handles collision detection for the game world.</span>
+<span class="sd">    Handle collision detection for the game world.</span>
 
 <span class="sd">    Responsibilities:</span>
-<span class="sd">        - Prevent movement outside map bounds</span>
-<span class="sd">        - Detect collisions with solid entities (e.g., walls)</span>
+<span class="sd">        - Prevent movement outside map boundaries</span>
+<span class="sd">        - Detect collisions with static map objects</span>
+<span class="sd">        - Resolve entity-to-entity interactions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_controller</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize CollisionController instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        game_controller : GameController</span>
+<span class="sd">            Reference to the main game controller.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gc</span> <span class="o">=</span> <span class="n">game_controller</span>
 
 <div class="viewcode-block" id="CollisionController.check_collision">
 <a class="viewcode-back" href="../../collision_controller.html#controller.collision_controller.CollisionController.check_collision">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_collision</span><span class="p">(</span><span class="n">new_x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_collision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">call_entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check whether a position is valid (no collision).</span>
+<span class="sd">        Validate whether a movement to the given position is allowed.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            new_x (int): Target X coordinate.</span>
-<span class="sd">            new_y (int): Target Y coordinate.</span>
+<span class="sd">        This method checks:</span>
+<span class="sd">            - Map boundaries</span>
+<span class="sd">            - Static tile collisions (walls, goals)</span>
+<span class="sd">            - Dynamic entity collisions</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            bool:</span>
-<span class="sd">                True if movement is allowed,</span>
-<span class="sd">                False if collision occurs.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_x : int</span>
+<span class="sd">            Target X coordinate.</span>
+<span class="sd">        new_y : int</span>
+<span class="sd">            Target Y coordinate.</span>
+<span class="sd">        call_entity : Entity</span>
+<span class="sd">            Entity requesting movement.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if movement is allowed, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Boundary check</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">new_x</span> <span class="o">&lt;</span> <span class="n">GRID_WIDTH</span><span class="p">):</span>
@@ -76,15 +96,69 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">new_y</span> <span class="o">&lt;</span> <span class="n">GRID_HEIGHT</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="c1"># Entity collision check</span>
-        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reg</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_map</span><span class="o">.</span><span class="n">grid</span><span class="p">:</span>
+        <span class="c1"># Tile-based collision check</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">current_map</span><span class="o">.</span><span class="n">grid</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">Wall</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="n">new_x</span> <span class="ow">and</span> <span class="n">cell</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> <span class="n">new_y</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="n">new_x</span> <span class="ow">and</span> <span class="n">cell</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> <span class="n">new_y</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">Wall</span><span class="p">):</span>
                         <span class="k">return</span> <span class="kc">False</span>
 
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">Goal</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">level_cleared</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">next_level</span><span class="p">()</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Entity collision check</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__check_entity_collision</span><span class="p">(</span><span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span><span class="p">,</span> <span class="n">call_entity</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
         <span class="k">return</span> <span class="kc">True</span></div>
-</div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__check_entity_collision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">call_entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resolve collisions between moving entities.</span>
+
+<span class="sd">        Handles interactions such as:</span>
+<span class="sd">            - Player - NPC combat</span>
+<span class="sd">            - NPC - NPC blocking</span>
+<span class="sd">            - Weapon hits on NPCs</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_x : int</span>
+<span class="sd">            Target X coordinate.</span>
+<span class="sd">        new_y : int</span>
+<span class="sd">            Target Y coordinate.</span>
+<span class="sd">        call_entity : Entity</span>
+<span class="sd">            Entity attempting movement.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if movement is allowed, False if blocked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">entities</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">entity</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">call_entity</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">entity</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="n">new_x</span> <span class="ow">and</span> <span class="n">entity</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> <span class="n">new_y</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">call_entity</span><span class="p">,</span> <span class="n">Player</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">NPC</span><span class="p">):</span>
+                        <span class="n">call_entity</span><span class="o">.</span><span class="n">take_damage</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">call_entity</span><span class="p">,</span> <span class="n">NPC</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">Player</span><span class="p">):</span>
+                        <span class="n">call_entity</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">NPC</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">call_entity</span><span class="p">,</span> <span class="n">Weapon</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">NPC</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 </pre></div>
 
@@ -125,6 +199,35 @@
 <li class="toctree-l1"><a class="reference internal" href="../../collision_controller.html">Collision Controller Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../player_controller.html">Player Controller Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../game_controller.html">Game Controller Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (General):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../entity.html">Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../movable_entity.html">Movable Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../map.html">Map Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Characters):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../character.html">Character Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../npc.html">NPC Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../light_elf.html">Light Elf Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../human.html">Human Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../orc.html">Orc Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Objects):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../floor.html">Floor Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../wall.html">Wall Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../goal.html">Goal Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../weapon.html">Weapon Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sword.html">Sword Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">View:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../game_view.html">Game View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../menu_view.html">Menu View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sprite_loader.html">Sprite Loader Module</a></li>
 </ul>
 
 <div class="relations">

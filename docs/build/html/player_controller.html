@@ -36,29 +36,41 @@
   <section id="module-controller.player_controller">
 <span id="player-controller-module"></span><h1>Player Controller Module<a class="headerlink" href="#module-controller.player_controller" title="Link to this heading">¶</a></h1>
 <p>Player input controller module.</p>
-<p>Handles keyboard input and translates it into
-player movement actions.</p>
+<p>Handle keyboard input and translate it into player actions.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="controller.player_controller.PlayerController">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">controller.player_controller.</span></span><span class="sig-name descname"><span class="pre">PlayerController</span></span><a class="reference internal" href="_modules/controller/player_controller.html#PlayerController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.player_controller.PlayerController" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Translates input events into player actions.</p>
-<dl class="simple">
-<dt>Responsibilities:</dt><dd><ul class="simple">
-<li><p>Reads keyboard input</p></li>
-<li><p>Moves player entity accordingly</p></li>
-</ul>
-</dd>
-</dl>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">controller.player_controller.</span></span><span class="sig-name descname"><span class="pre">PlayerController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_controller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/player_controller.html#PlayerController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.player_controller.PlayerController" title="Link to this definition">¶</a></dt>
+<dd><p>Handle player input and state updates.</p>
+<p>Translate input events into movement and combat actions.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="controller.player_controller.PlayerController.handle_input">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handle_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/player_controller.html#PlayerController.handle_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.player_controller.PlayerController.handle_input" title="Link to this definition">¶</a></dt>
-<dd><p>Process a pygame input event and move the player.</p>
+<dt class="sig sig-object py" id="controller.player_controller.PlayerController.check_player_status">
+<span class="sig-name descname"><span class="pre">check_player_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/player_controller.html#PlayerController.check_player_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.player_controller.PlayerController.check_player_status" title="Link to this definition">¶</a></dt>
+<dd><p>Update player-related state.</p>
+<p>Handle player death and active weapon entities.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>event</strong> – pygame event containing key input</p>
+<dd class="field-odd"><p><strong>dt</strong> (<em>float</em>) – Time delta used for updating cooldowns.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.player_controller.PlayerController.handle_input">
+<span class="sig-name descname"><span class="pre">handle_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/player_controller.html#PlayerController.handle_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.player_controller.PlayerController.handle_input" title="Link to this definition">¶</a></dt>
+<dd><p>Process input event and update player actions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> (<em>pygame.event.Event</em>) – Input event containing key information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.player_controller.PlayerController.sword_attack">
+<span class="sig-name descname"><span class="pre">sword_attack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/player_controller.html#PlayerController.sword_attack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.player_controller.PlayerController.sword_attack" title="Link to this definition">¶</a></dt>
+<dd><p>Trigger sword attack action.</p>
+<p>Spawn a sword entity in front of the player and
+perform initial collision checks.</p>
 </dd></dl>
 
 </dd></dl>
@@ -106,6 +118,35 @@ player movement actions.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="game_controller.html">Game Controller Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (General):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="movable_entity.html">Movable Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="map.html">Map Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Characters):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="character.html">Character Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="npc.html">NPC Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="light_elf.html">Light Elf Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="human.html">Human Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orc.html">Orc Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Objects):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="floor.html">Floor Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wall.html">Wall Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="goal.html">Goal Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weapon.html">Weapon Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sword.html">Sword Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">View:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="game_view.html">Game View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="menu_view.html">Menu View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sprite_loader.html">Sprite Loader Module</a></li>
 </ul>
 
 <div class="relations">

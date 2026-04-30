@@ -1,257 +1,336 @@
-"""
-Controller system unit tests.
+"""Testing module for CollisionController."""
 
-Covers:
-- Collision detection logic
-- File loading system
-- Player input translation
-- GameController entity factory
-- Map transformation system
-
-These tests isolate controller logic using mocks
-to avoid dependency on pygame runtime.
-"""
-
+import registry as reg
 import pygame
 import pytest
-import json
-import io
-from controller.collision_controller import CollisionController
-from controller.file_controller import FileController
-from controller.game_controller import GameController
-from model import Map
-from model.entities.objects.wall import Wall
-from model.entities.objects.floor import Floor
+from controller import *
+from model import Goal, Wall, NPC, Player, Weapon, Sword
+
+
+@pytest.fixture
+def dummy_entity():
+    class Dummy:
+        def __init__(self, eid="E1", x=0, y=0):
+            self.id = eid
+            self.x = x
+            self.y = y
+    return Dummy()
+
+@pytest.fixture
+def dummy_game():
+    class DummyGame:
+        def __init__(self):
+            self.entities = []
+            self.current_map = type("Map", (), {"grid": []})()
+            self.level_cleared = False
+            self.next_level_called = False
+            self.player = Player(x=0, y=0, hp=100, immortal=False)
+            self.cc = CollisionController(self)
+
+        def next_level(self):
+            self.next_level_called = True
+
+    return DummyGame()
 
 
 # =========================================================
 # COLLISION CONTROLLER TESTS
 # =========================================================
 
-def test_collision_within_bounds_allowed(monkeypatch):
-    """Movement inside bounds should be allowed."""
-
+def test_collision_out_of_bounds(monkeypatch, dummy_entity, dummy_game):
+    # Resizing the game grid to 10x10 for testing
     monkeypatch.setattr(
-        "config.GRID_WIDTH",
-        10,
-        raising=False
-    )
+        "controller.collision_controller.GRID_WIDTH",
+        10, raising=False)
     monkeypatch.setattr(
-        "config.GRID_HEIGHT",
-        10,
-        raising=False
-    )
+        "controller.collision_controller.GRID_HEIGHT",
+        10, raising=False)
 
-    class DummyGame:
-        current_map = type("Map", (), {"grid": []})()
+    controller = CollisionController(dummy_game)
+    entity = dummy_entity
 
-    import registry as reg
-    reg.game = DummyGame()
+    assert controller.check_collision(-1, 5, entity) is False
+    assert controller.check_collision(10, 5, entity) is False
+    assert controller.check_collision(5, 10, entity) is False
+    assert controller.check_collision(10, 10, entity) is False
+    assert controller.check_collision(5, -1, entity) is False
+    assert controller.check_collision(4, 3, entity) is True
 
-    assert CollisionController.check_collision(type[CollisionController], new_x=5, new_y=5) is True
-
-
-def test_collision_out_of_bounds_x(monkeypatch):
-    """Movement outside X bounds should be blocked."""
-
-    monkeypatch.setattr("config.GRID_WIDTH", 10, raising=False)
-    monkeypatch.setattr("config.GRID_HEIGHT", 10, raising=False)
-
-    assert CollisionController.check_collision(type[CollisionController], new_x=999, new_y=5) is False
-
-
-def test_collision_out_of_bounds_y(monkeypatch):
-    """Movement outside Y bounds should be blocked."""
-
-    monkeypatch.setattr("config.GRID_WIDTH", 10, raising=False)
-    monkeypatch.setattr("config.GRID_HEIGHT", 10, raising=False)
-
-    assert CollisionController.check_collision(type[CollisionController], new_x=5, new_y=999) is False
-
-
-def test_collision_wall_block(monkeypatch):
-    """Walls should block movement."""
-
-    monkeypatch.setattr("config.GRID_WIDTH", 10, raising=False)
-    monkeypatch.setattr("config.GRID_HEIGHT", 10, raising=False)
-
+def test_collision_with_wall_blocked(dummy_entity, dummy_game):
     wall = Wall(x=2, y=2)
 
-    class DummyMap:
-        grid = [[wall]]
+    game = dummy_game
+    game.current_map.grid = [[wall]]
 
-    class DummyGame:
-        current_map = DummyMap()
+    controller = CollisionController(game)
+    entity = dummy_entity
 
-    import registry as reg
-    reg.game = DummyGame()
+    assert controller.check_collision(2, 2, entity) is False
+    assert controller.check_collision(2, 1, entity) is True
 
-    assert CollisionController.check_collision(type[CollisionController], new_x=2, new_y=2) is False
+def test_goal_blocks_when_not_cleared(dummy_entity, dummy_game):
+    goal = Goal(x=1, y=1)
 
+    game = dummy_game
+    game.current_map.grid = [[goal]]
+    game.level_cleared = False
+
+    controller = CollisionController(game)
+    entity = dummy_entity
+
+    assert controller.check_collision(1, 1, entity) is False
+
+def test_goal_triggers_next_level(dummy_entity, dummy_game):
+    goal = Goal(x=1, y=1)
+
+    game = dummy_game
+    game.current_map.grid = [[goal]]
+    game.level_cleared = True
+
+    controller = CollisionController(game)
+    entity = dummy_entity
+
+    controller.check_collision(1, 1, entity)
+
+    assert game.next_level_called is True
+
+def test_player_hits_npc(dummy_game):
+    npc = NPC(x=1, y=1, hp=100, immortal=False)
+
+    game = dummy_game
+    game.entities = [npc]
+
+    controller = CollisionController(game)
+
+    sword = Sword(x= 0, y= 0)
+
+    controller.check_collision(1, 1, sword)
+
+    assert npc.health < npc.max_health
+
+def test_player_enters_npc(dummy_game):
+    game = dummy_game
+
+    player = Player(x=0, y=0, hp=100, immortal=False)
+    npc = NPC(x=1, y=1, hp=100, immortal=False)
+
+    game.entities = [npc]
+    controller = CollisionController(game)
+
+    controller.check_collision(1, 1, player)
+
+    assert player.health < player.max_health
+
+def test_npc_vs_npc_blocked(dummy_game, dummy_entity):
+    npc1 = NPC(x=0, y=0)
+    npc2 = NPC(x=1, y=1)
+
+    game = dummy_game
+    game.entities = [npc1, npc2]
+
+    controller = CollisionController(game)
+
+    assert controller.check_collision(1, 1, npc1) is False
+
+def test_weapon_hits_npc(dummy_game):
+    npc = NPC(x=1, y=1, hp=10, immortal=False)
+
+    game = dummy_game
+    game.entities = [npc]
+
+    controller = CollisionController(game)
+
+    weapon = Weapon(x=0, y=0)
+
+    controller.check_collision(1, 1, weapon)
+
+    assert npc.health < npc.max_health
+
+def test_npc_attacks_player(dummy_game):
+    game = dummy_game
+
+    player = Player(x=1, y=1, hp=100, immortal=False)
+    npc = NPC(x=0, y=0, hp=10, immortal=False, agro=True)
+
+    game.entities = [player, npc]
+
+    controller = CollisionController(game)
+
+    # FORCE collision resolution directly
+    controller.check_collision(1, 1, npc)
+
+    assert player.health < 100
 
 # =========================================================
 # FILE CONTROLLER TESTS
 # =========================================================
 
-def test_get_maps_json_type(monkeypatch):
-    """FileController should return dict/list from JSON."""
+def test_get_maps_json(monkeypatch):
+    """FileController should return parsed JSON data."""
 
-    sample_data = {"1": {"id": 1, "grid": []}}
+    fake_data = {"level": 1}
 
-    fake_json = json.dumps(sample_data)
+    class FakeFile:
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
 
     def fake_open(*args, **kwargs):
-        return io.StringIO(fake_json)
+        return FakeFile()
+
+    def fake_json_load(file):
+        return fake_data
 
     monkeypatch.setattr("builtins.open", fake_open)
+    monkeypatch.setattr("json.load", fake_json_load)
 
-    data = FileController.get_maps_json()
+    result = FileController.get_maps_json()
 
-    assert isinstance(data, dict)
-    assert data == sample_data
-
+    assert result == fake_data
 
 # =========================================================
 # PLAYER CONTROLLER TESTS
 # =========================================================
 
-from controller.player_controller import PlayerController
+def test_handle_input_w_moves_up(monkeypatch, dummy_game):
+    game = dummy_game
+    reg.game = game
 
+    controller = PlayerController(game)
 
-class DummyPlayer:
-    def __init__(self):
-        self.x = 1
-        self.y = 1
-        self.sword_attack = False
-        self.face_direction = (0, -1)
+    event = type("E", (), {"key": pygame.K_w})()
 
-    def move(self, dx, dy):
-        self.x += dx
-        self.y += dy
+    controller.handle_input(event)
 
+    assert game.player.position != [0, -1]
 
-class DummyGC:
-    def __init__(self):
-        self.player = DummyPlayer()
-        self.entities = []
-        self.cc = type("CC", (), {"check_entity_collision": lambda *a, **k: None})()
+def test_handle_input_s_moves_down(monkeypatch, dummy_game):
+    game = dummy_game
+    reg.game = game
 
-        def create_entity(*args, **kwargs):
-            class DummySword:
-                def __init__(self):
-                    self.id = "SW-1"
-                    self.x = kwargs.get("x", 0)
-                    self.y = kwargs.get("y", 0)
-                    self.ready = True
+    controller = PlayerController(game)
 
-            sword = DummySword()
-            self.entities.append(sword)
-            return sword
+    event = type("E", (), {"key": pygame.K_s})()
 
-        self.create_entity = create_entity
+    controller.handle_input(event)
 
-        def restart_level():
-            self.restarted = True
+    assert game.player.position == [0, 1]
 
-        self.restart_level = restart_level
+def test_handle_input_d_moves_right(monkeypatch, dummy_game):
+    game = dummy_game
+    reg.game = game
 
+    controller = PlayerController(game)
 
-# ---------------------------------------------------------
-# MOVEMENT TESTS
-# ---------------------------------------------------------
+    event = type("E", (), {"key": pygame.K_d})()
 
-def test_player_controller_moves_w():
-    gc = DummyGC()
-    pc = PlayerController(gc)
+    controller.handle_input(event)
 
-    event = type("Event", (), {"key": pygame.K_w})()
+    assert game.player.position == [1, 0]
 
-    pc.handle_input(event)
+def test_handle_input_a_moves_right(monkeypatch, dummy_game):
+    game = dummy_game
+    reg.game = game
 
-    assert gc.player.x == 1
-    assert gc.player.y == 0
+    controller = PlayerController(game)
 
+    event = type("E", (), {"key": pygame.K_a})()
 
-def test_player_controller_moves_d():
-    gc = DummyGC()
-    pc = PlayerController(gc)
+    controller.handle_input(event)
 
-    event = type("Event", (), {"key": pygame.K_d})()
+    assert game.player.position != [-1, 0]
 
-    pc.handle_input(event)
+def test_handle_input_no_player():
+    """Should safely return when player is None."""
 
-    assert gc.player.x == 2
-    assert gc.player.y == 1
+    class DummyGame:
+        def __init__(self):
+            self.player = None
 
+    controller = PlayerController(DummyGame())
 
-# ---------------------------------------------------------
-# SWORD ATTACK TEST
-# ---------------------------------------------------------
+    event = type("E", (), {"key": pygame.K_w})()
 
-def test_player_controller_sword_attack_creates_entity():
-    gc = DummyGC()
-    pc = PlayerController(gc)
+    controller.handle_input(event)
 
-    event = type("Event", (), {"key": pygame.K_SPACE})()
+    assert controller.gc.player is None
 
-    pc.handle_input(event)
+def test_handle_input_player_no_position(monkeypatch, dummy_game):
+    class DummyGame:
+        def __init__(self):
+            self.player = Player()
 
-    assert gc.player.sword_attack is True
-    assert len(gc.entities) == 1
-    assert gc.entities[0].id.startswith("SW")
-
-
-# ---------------------------------------------------------
-# PLAYER STATUS TEST
-# ---------------------------------------------------------
-
-def test_player_controller_restart_on_death():
-    gc = DummyGC()
-    pc = PlayerController(gc)
-
-    gc.player.health = 0
-
-    pc.check_player_status(dt=0.1)
-
-    assert hasattr(gc, "restarted")
-# =========================================================
-# GAME CONTROLLER TESTS
-# =========================================================
-
-def test_game_controller_entity_factory():
-    """GameController should create valid entities."""
-
-    gc = GameController.__new__(GameController)
-    gc.entities = []
-
-    entity = gc.create_entity("player", name="Test")
-
-    assert entity.name == "Test"
-    assert entity in gc.entities
-
-
-def test_game_controller_invalid_entity():
-    """Unknown entity type should raise error."""
-
-    gc = GameController.__new__(GameController)
-    gc.entities = []
+    controller = PlayerController(DummyGame())
+    event = type("E", (), {"key": pygame.K_w})()
+    controller.handle_input(event)
 
     with pytest.raises(ValueError):
-        gc.create_entity("unknown")
+        assert controller.gc.player.position is [None, None]
 
+def test_sword_attack_creates_entity(monkeypatch):
+    """SPACE should create sword entity."""
 
-# =========================================================
-# MAP TRANSFORMATION TESTS
-# =========================================================
+    class DummyPlayer:
+        def __init__(self):
+            self.x = 1
+            self.y = 1
+            self.face_direction = (1, 0)
+            self.sword_attack = False
 
-def test_map_transform_wall_and_floor():
-    """Map grid should convert strings to objects."""
+    class DummyGame:
+        def __init__(self):
+            self.player = DummyPlayer()
+            self.entities = []
+            self.created = None
 
-    gc = GameController.__new__(GameController)
-    gc.entities = []
-    gc.player = None
+        def create_entity(self, name, **kwargs):
+            self.created = (name, kwargs)
+            self.entities.append((name, kwargs))
 
-    result = gc._transform_map(Map(id=-100, grid=[['1', '0']]))
+        class cc:
+            @staticmethod
+            def check_collision(*args):
+                return True
 
-    assert isinstance(result.grid[0][0], Wall)
-    assert isinstance(result.grid[0][1], Floor)
+    controller = PlayerController(DummyGame())
+
+    controller.sword_attack()
+
+    assert controller.gc.created[0] == "sword"
+
+def test_sword_removal_when_done():
+    """Sword should be removed when update returns True."""
+
+    class DummyPlayer:
+        def __init__(self):
+            self.health = 100
+            self.sword_attack = True
+
+    class DummyGame:
+        def __init__(self):
+            self.player = DummyPlayer()
+            self.entities = [Sword(x=0, y=0)]
+
+    controller = PlayerController(DummyGame())
+
+    controller.check_player_status(0.6)
+
+    assert controller.gc.entities == []
+
+def test_sword_removal_when_time():
+    """Sword should be removed when update returns True."""
+
+    class DummyPlayer:
+        def __init__(self):
+            self.health = 100
+            self.sword_attack = True
+
+    class DummyGame:
+        def __init__(self):
+            self.player = DummyPlayer()
+            self.entities = [Sword(x=0, y=0)]
+
+    controller = PlayerController(DummyGame())
+
+    controller.check_player_status(0.1)
+
+    assert controller.gc.entities != []

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>view.game_view &#8212; RPG Game alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=1f169f65"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for view.game_view</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Game rendering module.</span>
+
+<span class="sd">Responsible for drawing the game world, including the map, player,</span>
+<span class="sd">entities, and debug visuals onto the screen using pygame.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TILE_SIZE</span><span class="p">,</span> <span class="n">GRID_HEIGHT</span><span class="p">,</span> <span class="n">GRID_WIDTH</span><span class="p">,</span> <span class="n">Direction</span><span class="p">,</span> <span class="n">Color</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Wall</span><span class="p">,</span> <span class="n">Floor</span><span class="p">,</span> <span class="n">LightElf</span><span class="p">,</span> <span class="n">Goal</span><span class="p">,</span> <span class="n">Sword</span><span class="p">,</span> <span class="n">Orc</span><span class="p">,</span> <span class="n">Human</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.sprite_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpriteLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.menu_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">MenuView</span>
+
+
+<div class="viewcode-block" id="GameView">
+<a class="viewcode-back" href="../../game_view.html#view.game_view.GameView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GameView</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle rendering of the game world.</span>
+
+<span class="sd">    The GameView is responsible for drawing all visual elements,</span>
+<span class="sd">    including the tile map, player, NPCs, HUD, and debug grid.</span>
+
+<span class="sd">    This class does not manage game logic or state updates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_controller</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize GameView instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        game_controller : GameController</span>
+<span class="sd">            Controller providing game state, entities, and screen surface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gc</span> <span class="o">=</span> <span class="n">game_controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">SCREEN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sl</span> <span class="o">=</span> <span class="n">SpriteLoader</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mv</span> <span class="o">=</span> <span class="n">MenuView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GameView.render">
+<a class="viewcode-back" href="../../game_view.html#view.game_view.GameView.render">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render a full frame of the game.</span>
+
+<span class="sd">        This includes clearing the screen, rendering the map,</span>
+<span class="sd">        player, and entities, then updating the display.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">draw_main_menu</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">draw_outro</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_draw_level</span><span class="p">()</span>
+
+        <span class="c1"># Update the window</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameView._draw_level">
+<a class="viewcode-back" href="../../game_view.html#view.game_view.GameView._draw_level">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render active game level.</span>
+
+<span class="sd">        The screen is cleared and all level components are drawn,</span>
+<span class="sd">        including map, player, HUD, and entities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__draw_map</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__draw_player</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__draw_hud</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__draw_entities</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameView._draw_grid">
+<a class="viewcode-back" href="../../game_view.html#view.game_view.GameView._draw_grid">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render debug grid overlay.</span>
+
+<span class="sd">        A grid based on tile size is drawn over the screen to assist</span>
+<span class="sd">        with debugging and level design.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">GRID_HEIGHT</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">GRID_WIDTH</span><span class="p">):</span>
+                <span class="n">rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+                    <span class="n">x</span> <span class="o">*</span> <span class="n">TILE_SIZE</span><span class="p">,</span>
+                    <span class="n">y</span> <span class="o">*</span> <span class="n">TILE_SIZE</span><span class="p">,</span>
+                    <span class="n">TILE_SIZE</span><span class="p">,</span>
+                    <span class="n">TILE_SIZE</span>
+                <span class="p">)</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="p">,</span>
+                                 <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+                                 <span class="n">rect</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__draw_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render tile-based map.</span>
+
+<span class="sd">        The current map grid is iterated and corresponding tile sprites</span>
+<span class="sd">        are drawn based on tile type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">game_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">current_map</span>
+
+        <span class="k">if</span> <span class="n">game_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">TILE_SIZE</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">TILE_SIZE</span>
+
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">Wall</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sl</span><span class="o">.</span><span class="n">wall_sprite</span><span class="p">,</span>
+                                         <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">Floor</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sl</span><span class="o">.</span><span class="n">floor_sprite</span><span class="p">,</span>
+                                         <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">Goal</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">level_cleared</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sl</span><span class="o">.</span><span class="n">goal_door_sprite</span><span class="p">,</span>
+                                             <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sl</span><span class="o">.</span><span class="n">goal_door_locked_sprite</span><span class="p">,</span>
+                                             <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__draw_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render dynamic entities.</span>
+
+<span class="sd">        All active entities such as NPCs, enemies, and items</span>
+<span class="sd">        are rendered based on their type and position.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">entities</span>
+
+        <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">LightElf</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">TILE_SIZE</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">TILE_SIZE</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sl</span><span class="o">.</span><span class="n">light_elf_sprite</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">Orc</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">TILE_SIZE</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">TILE_SIZE</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sl</span><span class="o">.</span><span class="n">orc_sprite</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">Human</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">TILE_SIZE</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">TILE_SIZE</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sl</span><span class="o">.</span><span class="n">human_sprite</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">Sword</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">TILE_SIZE</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">TILE_SIZE</span>
+
+                <span class="n">rotated_sword</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sl</span><span class="o">.</span><span class="n">sword_sprite</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">face_direction</span> <span class="o">==</span> <span class="n">Direction</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
+                    <span class="n">rotated_sword</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">rotated_sword</span><span class="p">,</span>
+                                                            <span class="n">Direction</span><span class="o">.</span><span class="n">LEFT_DEG</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">face_direction</span> <span class="o">==</span> <span class="n">Direction</span><span class="o">.</span><span class="n">DOWN</span><span class="p">:</span>
+                    <span class="n">rotated_sword</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">rotated_sword</span><span class="p">,</span>
+                                                            <span class="n">Direction</span><span class="o">.</span><span class="n">DOWN_DEG</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">face_direction</span> <span class="o">==</span> <span class="n">Direction</span><span class="o">.</span><span class="n">UP</span><span class="p">:</span>
+                    <span class="n">rotated_sword</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">rotated_sword</span><span class="p">,</span>
+                                                            <span class="n">Direction</span><span class="o">.</span><span class="n">UP_DEG</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">rotated_sword</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__draw_player</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render player sprite.</span>
+
+<span class="sd">        The player entity is drawn at its current grid position.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span>
+
+        <span class="k">if</span> <span class="n">player</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sl</span><span class="o">.</span><span class="n">player_sprite</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">TILE_SIZE</span><span class="p">,</span> <span class="n">player</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">TILE_SIZE</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__draw_hud</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render HUD elements.</span>
+
+<span class="sd">        The HUD currently includes the player health bar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__draw_health_bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="p">,</span>
+                                   <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                                   <span class="mi">200</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">health</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">max_health</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__draw_health_bar</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">maximum</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render a health bar.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        surface : pygame.Surface</span>
+<span class="sd">            Surface to draw on.</span>
+<span class="sd">        x : int</span>
+<span class="sd">            X position.</span>
+<span class="sd">        y : int</span>
+<span class="sd">            Y position.</span>
+<span class="sd">        width : int</span>
+<span class="sd">            Total width of the bar.</span>
+<span class="sd">        height : int</span>
+<span class="sd">            Height of the bar.</span>
+<span class="sd">        current : int</span>
+<span class="sd">            Current health value.</span>
+<span class="sd">        maximum : int</span>
+<span class="sd">            Maximum health value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ratio</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">current</span> <span class="o">/</span> <span class="n">maximum</span>
+
+        <span class="c1"># Background</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span>
+                         <span class="n">Color</span><span class="o">.</span><span class="n">BLACK</span><span class="p">,</span>
+                         <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+
+        <span class="c1"># Foreground</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span>
+                         <span class="n">Color</span><span class="o">.</span><span class="n">RED</span><span class="p">,</span>
+                         <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">RPG Game</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../config.html">Config Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../registry.html">Registry Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../main.html">Main Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Logic Controllers:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../file_controller.html">File Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../collision_controller.html">Collision Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../player_controller.html">Player Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../game_controller.html">Game Controller Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (General):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../entity.html">Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../movable_entity.html">Movable Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../map.html">Map Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Characters):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../character.html">Character Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../npc.html">NPC Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../light_elf.html">Light Elf Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../human.html">Human Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../orc.html">Orc Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Objects):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../floor.html">Floor Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../wall.html">Wall Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../goal.html">Goal Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../weapon.html">Weapon Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sword.html">Sword Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">View:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../game_view.html">Game View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../menu_view.html">Menu View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sprite_loader.html">Sprite Loader Module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Silmon121.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

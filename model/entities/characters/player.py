@@ -1,7 +1,7 @@
 """
 Player module.
 
-Defines the Player class, which is the main controllable
+Define the Player class, which represents the main controllable
 character in the game.
 """
 
@@ -10,14 +10,10 @@ from model.entities.characters.character import Character
 
 class Player(Character):
     """
-    Player-controlled character.
+    Represent the player-controlled character.
 
-    Extends:
-        Character: Base character logic (stats, movement, combat)
-
-    Customizations:
-        - Higher base health
-        - Player-specific string representation
+    Extend Character with player-specific attributes and behavior,
+    such as combat state and increased base health.
     """
 
     #: Unique prefix for player entities.
@@ -32,14 +28,32 @@ class Player(Character):
     _max_health = 100
 
     def __init__(self, **kwargs):
-        """Initialize a Player instance."""
+        """
+        Initialize Player instance.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to Character constructor.
+        """
         super().__init__(**kwargs)
         self.sword_attack = False
 
     def __str__(self) -> str:
-        """Return user-friendly string representation."""
+        """
+        Return a human-readable string representation.
+
+        Returns
+        -------
+        str
+            Player summary including name and health.
+        """
         return f"Player\nName: {self._name}\nHP: {self._hp}\n"
 
     def __init_subclass__(cls):
-        """Ensure subclass validation rules are enforced."""
+        """
+        Initialize Player subclass.
+
+        Ensure inheritance chain initialization rules are preserved.
+        """
         super().__init_subclass__()

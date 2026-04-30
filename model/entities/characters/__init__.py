@@ -1,11 +1,11 @@
 """
-Entity package initializer.
+Character package initializer.
 
-This package contains all entity-related classes used in the game
-(e.g., Entity, Character, Player, NPC, Wall, Floor).
+Contains all character-type entities in the game, including
+the player and all NPC-based character implementations.
 
 Note:
     This module is intentionally empty.
-    All imports and public exposure are managed in the top-level
-    `model` package to maintain a clean public API.
+    All public imports are managed through the top-level `model`
+    package to maintain a clean and unified API structure.
 """

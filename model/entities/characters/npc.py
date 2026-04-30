@@ -1,7 +1,7 @@
 """
 NPC (Non-Player Character) module.
 
-Defines AI-controlled characters in the game world.
+Define AI-controlled characters in the game world.
 """
 
 import random
@@ -10,13 +10,10 @@ from .character import Character
 
 class NPC(Character):
     """
-    Non-player character controlled by game logic or AI.
+    Represent a non-player character controlled by game logic.
 
-    Extends:
-        Character: Base stats + movement + combat
-
-    Adds:
-        - Aggro behavior flag (agro)
+    Extend Character with basic AI movement behavior and
+    optional aggressive (agro) combat behavior.
     """
 
     #: Unique prefix for NPC entities.
@@ -27,47 +24,60 @@ class NPC(Character):
         "agro": bool
     }
 
-    #: Time to move for an npc
+    #: Time interval between movement decisions.
     _time_to_move = 5
 
-    #: Probability to move
+    #: Probability of performing a movement action.
     _prob_to_move = 0.8
 
     def __init__(self, **kwargs):
         """
-        Initialize an NPC entity.
+        Initialize NPC instance.
 
-        Args:
-            agro (bool, optional): Whether NPC is aggressive.
+        Parameters
+        ----------
+        agro : bool, optional
+            Determines whether NPC is aggressive toward targets.
         """
         super().__init__(**kwargs)
+
         self.move_timer = 0.0
         self._agro = kwargs.get("agro", True)
 
     def update_position(self, dt):
+        """
+        Update NPC movement based on internal timing and randomness.
+
+        Parameters
+        ----------
+        dt : float
+            Time delta since last update.
+        """
         self.move_timer += dt
 
         if self.move_timer >= self._time_to_move:
             if random.random() < self._prob_to_move:
-                axis_prob = random.randint(0, 1)
-                if axis_prob == 0:
-                    dx = random.randint(0, 1)
-                    dx = -1 if dx == 0 else 1
+                axis = random.randint(0, 1)
+
+                if axis == 0:
+                    dx = -1 if random.randint(0, 1) == 0 else 1
                     self.move(dx, 0)
-                elif axis_prob == 1:
-                    dy = random.randint(0, 1)
-                    dy = -1 if dy == 0 else 1
+                else:
+                    dy = -1 if random.randint(0, 1) == 0 else 1
                     self.move(0, dy)
 
             self.move_timer = 0.0
 
     def attack(self, target):
-        if self._agro:
-            """
-            Perform an attack action.
+        """
+        Perform an attack on a target if NPC is aggressive.
 
-            To be implemented by subclasses.
-            """
+        Parameters
+        ----------
+        target : Character
+            Entity receiving damage.
+        """
+        if self._agro:
             target.health -= self._damage
 
     # =========================================================
@@ -76,5 +86,12 @@ class NPC(Character):
 
     @property
     def agro(self) -> bool:
-        """Whether the NPC is aggressive toward the player."""
+        """
+        Return whether NPC is aggressive.
+
+        Returns
+        -------
+        bool
+            True if NPC can initiate attacks.
+        """
         return self._agro

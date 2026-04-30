@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Game View Module &#8212; RPG Game alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=1f169f65"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Menu View Module" href="menu_view.html" />
+    <link rel="prev" title="Sword Module" href="sword.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-view.game_view">
+<span id="game-view-module"></span><h1>Game View Module<a class="headerlink" href="#module-view.game_view" title="Link to this heading">¶</a></h1>
+<p>Game rendering module.</p>
+<p>Responsible for drawing the game world, including the map, player,
+entities, and debug visuals onto the screen using pygame.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="view.game_view.GameView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">view.game_view.</span></span><span class="sig-name descname"><span class="pre">GameView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_controller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/view/game_view.html#GameView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#view.game_view.GameView" title="Link to this definition">¶</a></dt>
+<dd><p>Handle rendering of the game world.</p>
+<p>The GameView is responsible for drawing all visual elements,
+including the tile map, player, NPCs, HUD, and debug grid.</p>
+<p>This class does not manage game logic or state updates.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="view.game_view.GameView.__draw_entities">
+<span class="sig-name descname"><span class="pre">__draw_entities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#view.game_view.GameView.__draw_entities" title="Link to this definition">¶</a></dt>
+<dd><p>Render dynamic entities.</p>
+<p>All active entities such as NPCs, enemies, and items
+are rendered based on their type and position.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="view.game_view.GameView.__draw_health_bar">
+<span class="sig-name descname"><span class="pre">__draw_health_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#view.game_view.GameView.__draw_health_bar" title="Link to this definition">¶</a></dt>
+<dd><p>Render a health bar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface</strong> (<em>pygame.Surface</em>) – Surface to draw on.</p></li>
+<li><p><strong>x</strong> (<em>int</em>) – X position.</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – Y position.</p></li>
+<li><p><strong>width</strong> (<em>int</em>) – Total width of the bar.</p></li>
+<li><p><strong>height</strong> (<em>int</em>) – Height of the bar.</p></li>
+<li><p><strong>current</strong> (<em>int</em>) – Current health value.</p></li>
+<li><p><strong>maximum</strong> (<em>int</em>) – Maximum health value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="view.game_view.GameView.__draw_hud">
+<span class="sig-name descname"><span class="pre">__draw_hud</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#view.game_view.GameView.__draw_hud" title="Link to this definition">¶</a></dt>
+<dd><p>Render HUD elements.</p>
+<p>The HUD currently includes the player health bar.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="view.game_view.GameView.__draw_map">
+<span class="sig-name descname"><span class="pre">__draw_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#view.game_view.GameView.__draw_map" title="Link to this definition">¶</a></dt>
+<dd><p>Render tile-based map.</p>
+<p>The current map grid is iterated and corresponding tile sprites
+are drawn based on tile type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="view.game_view.GameView.__draw_player">
+<span class="sig-name descname"><span class="pre">__draw_player</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#view.game_view.GameView.__draw_player" title="Link to this definition">¶</a></dt>
+<dd><p>Render player sprite.</p>
+<p>The player entity is drawn at its current grid position.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="view.game_view.GameView._draw_grid">
+<span class="sig-name descname"><span class="pre">_draw_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/view/game_view.html#GameView._draw_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#view.game_view.GameView._draw_grid" title="Link to this definition">¶</a></dt>
+<dd><p>Render debug grid overlay.</p>
+<p>A grid based on tile size is drawn over the screen to assist
+with debugging and level design.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="view.game_view.GameView._draw_level">
+<span class="sig-name descname"><span class="pre">_draw_level</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/view/game_view.html#GameView._draw_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#view.game_view.GameView._draw_level" title="Link to this definition">¶</a></dt>
+<dd><p>Render active game level.</p>
+<p>The screen is cleared and all level components are drawn,
+including map, player, HUD, and entities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="view.game_view.GameView.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/view/game_view.html#GameView.render"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#view.game_view.GameView.render" title="Link to this definition">¶</a></dt>
+<dd><p>Render a full frame of the game.</p>
+<p>This includes clearing the screen, rendering the map,
+player, and entities, then updating the display.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">RPG Game</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registry.html">Registry Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Logic Controllers:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_controller.html">File Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="collision_controller.html">Collision Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player_controller.html">Player Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_controller.html">Game Controller Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (General):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="movable_entity.html">Movable Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="map.html">Map Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Characters):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="character.html">Character Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="npc.html">NPC Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="light_elf.html">Light Elf Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="human.html">Human Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orc.html">Orc Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Objects):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="floor.html">Floor Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wall.html">Wall Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="goal.html">Goal Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weapon.html">Weapon Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sword.html">Sword Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">View:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game View Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#view.game_view.GameView"><code class="docutils literal notranslate"><span class="pre">GameView</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="menu_view.html">Menu View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sprite_loader.html">Sprite Loader Module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="sword.html" title="previous chapter">Sword Module</a></li>
+      <li>Next: <a href="menu_view.html" title="next chapter">Menu View Module</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Silmon121.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/game_view.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

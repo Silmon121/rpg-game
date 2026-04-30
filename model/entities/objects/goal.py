@@ -1,8 +1,20 @@
-"""Goal class module"""
-import registry
+"""
+Goal entity module.
+
+Represent a goal tile that marks level completion.
+"""
+
 from model.entities.entity import Entity
 
+
 class Goal(Entity):
+    """
+    Represent a goal tile.
+
+    Used as an objective tile in the game world. Reaching this
+    tile typically triggers level completion.
+    """
+
     #: Unique prefix for Floor entities.
     __ID_PREFIX: str = "G"
 
@@ -11,9 +23,11 @@ class Goal(Entity):
 
     def __init__(self, **kwargs):
         """
-        Initialize a Floor tile.
+        Initialize Goal instance.
 
-        Args:
-            **kwargs: Passed to base Entity constructor.
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to Entity constructor.
         """
         super().__init__(**kwargs)

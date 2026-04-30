@@ -1,27 +1,20 @@
 """
 Character module.
 
-Defines a base class for all living entities in the game,
-such as players, NPCs, enemies, etc.
+Define a base class for all living entities in the game,
+such as players, NPCs, and enemies.
 """
 
 from abc import ABC
-
 from model.entities.movable_entity import MovableEntity
 
 
 class Character(MovableEntity, ABC):
     """
-    Base class for all character-type entities.
+    Represent a base class for all character-type entities.
 
-    Extends:
-        MovableEntity: Adds movement capability
-        ABC: Prevents direct instantiation
-
-    Provides:
-        - Health system (HP)
-        - Combat attributes (strength, intelligence)
-        - Immortality flag
+    Extend MovableEntity with health, combat stats, and
+    immortality support.
     """
 
     #: Unique prefix for character entities.
@@ -33,8 +26,6 @@ class Character(MovableEntity, ABC):
         "immortal": bool,
     }
 
-    __WANTED_FIELDS: list[str] = ["__ID_PREFIX", "__EXPECTED_PARAMETERS"]
-
     #: Default maximum health.
     _max_health = 100
 
@@ -43,13 +34,15 @@ class Character(MovableEntity, ABC):
 
     def __init__(self, **kwargs):
         """
-        Initialize a character entity.
+        Initialize Character instance.
 
-        Args:
-            hp (int, optional): Starting health points.
-            immortal (bool): If True, character cannot be killed.
-            strength (int): Physical power stat.
-            intelligence (int): Mental power stat.
+        Parameters
+        ----------
+        hp : int, optional
+            Starting health points. If not provided,
+            the maximum health value is used.
+        immortal : bool, optional
+            If set to True, the character cannot be killed.
         """
         super().__init__(**kwargs)
 
@@ -62,24 +55,25 @@ class Character(MovableEntity, ABC):
         self._immortal = immortal
 
     def __repr__(self) -> str:
-        """Developer-friendly representation of the character."""
+        """
+        Return a developer-friendly representation.
+
+        Returns
+        -------
+        str
+            Detailed character state including health and flags.
+        """
         return (
-            super().__repr__() +
-            f"\nCHARACTER INFO:\n"
-            f"Max HP: {self._max_health}\n"
-            f"HP: {self._hp}\n"
-            f"Immortal: {self._immortal}\n"
+                super().__repr__() +
+                "\nCHARACTER INFO:\n"
+                f"Max HP: {self._max_health}\n"
+                f"HP: {self._hp}\n"
+                f"Immortal: {self._immortal}\n"
         )
 
     def __init_subclass__(cls):
-        """Enforce subclass field requirements."""
+        """Subclass initialization hook."""
         super().__init_subclass__()
-
-        for field in cls.__WANTED_FIELDS:
-            if f"_{cls.__name__}{field}" not in cls.__dict__:
-                raise TypeError(
-                    f"Class '{cls.__name__}' is missing field: {field}"
-                )
 
     # =========================================================
     # Gameplay methods
@@ -87,15 +81,25 @@ class Character(MovableEntity, ABC):
 
     def attack(self, target):
         """
-        Perform an attack action.
+        Apply damage to a target entity.
 
-        To be implemented by subclasses.
+        Parameters
+        ----------
+        target : Character
+            Entity receiving damage.
         """
         target.health -= self._damage
 
     def take_damage(self, attacker):
-        self._hp -= attacker.damage
+        """
+        Reduce health based on incoming attacker damage.
 
+        Parameters
+        ----------
+        attacker : Character
+            Entity dealing damage.
+        """
+        self._hp -= attacker.damage
 
     # =========================================================
     # Properties
@@ -103,24 +107,32 @@ class Character(MovableEntity, ABC):
 
     @property
     def health(self) -> int:
-        """Current health points."""
+        """
+        Return current health value.
+
+        Returns
+        -------
+        int
+            Current HP.
+        """
         return self._hp
 
     @property
     def is_immortal(self) -> bool:
-        """Whether the character is immortal."""
+        """Return whether character is immortal."""
         return self._immortal
 
     @property
     def damage(self) -> int:
-        """Damage stat."""
+        """Return character damage value."""
         return self._damage
 
     @property
     def max_health(self) -> int:
-        """Max health stat."""
+        """Return maximum health value."""
         return self._max_health
 
     @health.setter
     def health(self, value):
+        """Set current health value."""
         self._hp = value

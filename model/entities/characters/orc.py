@@ -1,29 +1,46 @@
-"""Orc character model"""
+"""
+Orc NPC module.
+
+Define the Orc class, representing a strong, high-health
+NPC with increased damage and slower movement behavior.
+"""
 
 from .npc import NPC
 
+
 class Orc(NPC):
-    """Orc character model"""
-    #: Unique prefix for NPC entities.
+    """
+    Represent an Orc NPC entity.
+
+    Extend NPC with high durability and increased combat
+    strength at the cost of slower movement behavior.
+    """
+
+    #: Unique prefix for Orc NPC entities.
     __ID_PREFIX = "OR"
 
     #: Expected initialization parameters.
-    __EXPECTED_PARAMETERS: dict[str, type] = {
+    __EXPECTED_PARAMETERS: dict[str, type] = {}
 
-    }
-
-    #: Orc max health
+    #: Default maximum health value.
     _max_health = 120
 
-    #: Orc dmg
+    #: Default damage value.
     _damage: int = 25
 
-    #: Time limit for entity to move
+    #: Time interval between movement decisions.
     _time_to_move = 2
 
-    #: Probability to move
+    #: Probability of performing a movement action.
     _prob_to_move = 0.8
 
     def __init__(self, **kwargs):
-        """Orc constructor"""
+        """
+        Initialize Orc NPC instance.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to NPC constructor.
+        """
         super().__init__(**kwargs)

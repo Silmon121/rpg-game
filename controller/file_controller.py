@@ -1,8 +1,8 @@
 """
 File I/O controller module.
 
-Responsible for loading game data from external files,
-such as maps, configuration, and saved state.
+Responsible for loading external game data,
+such as maps, configuration files, and saved state.
 """
 
 import json
@@ -10,24 +10,24 @@ import json
 
 class FileController:
     """
-    Handles file-based operations for the game.
+    Handle file-based operations for the game.
 
-    Available supports:
-        - Loading map data from JSON files
+    This controller is responsible for loading and parsing
+    external JSON data required by the game systems.
     """
-
-    def __init__(self):
-        """Initialize the file controller."""
-        pass
 
     @staticmethod
     def get_maps_json():
         """
         Load map data from JSON file.
 
-        Returns:
-            dict | list:
-                Parsed JSON data from data/maps.json
+        The map file is read from:
+            data/maps.json
+
+        Returns
+        -------
+        dict | list
+            Parsed JSON structure containing map data.
         """
         with open("data/maps.json", "r", encoding="utf-8") as file:
             data = json.load(file)
