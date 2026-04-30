@@ -13,7 +13,7 @@ These tests ensure correctness of:
 - runtime validation logic
 - core gameplay entity mechanics
 """
-
+from model import Map
 from model.entities.entity import Entity
 from model.entities.characters.player import Player
 from model.entities.characters.npc import NPC
@@ -128,3 +128,15 @@ def test_floor_creation():
     f = Floor(x=2, y=2)
     assert f.x == 2
     assert f.y == 2
+
+# =========================================================
+# OBJECT TESTS
+# =========================================================
+
+
+def test_map_init():
+    """Map should store correct coordinates."""
+    m = Map(id="m1", grid=[["1", "2"]])
+
+    assert m.id == "m1"
+    assert m.grid == [["1", "2"]]

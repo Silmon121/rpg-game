@@ -14,7 +14,7 @@ class Map:
     and a unique identifier for reference.
     """
 
-    def __init__(self, id: int, grid: list):
+    def __init__(self, id: str, grid: list):
         """
         Initialize Map instance.
 
