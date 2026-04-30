@@ -24,23 +24,24 @@ from model.entities.objects.floor import Floor
 # INHERITANCE RULES
 # =========================================================
 
+
 def test_missing_required_class_fields_raises():
-    """
-    Ensure Entity class maintains required internal structure.
-    """
+    """Test Entity class maintains required internal structure."""
     assert hasattr(Entity, "_Entity__ID_PREFIX")
 
 # =========================================================
 # PLAYER TESTS
 # =========================================================
 
+
 def test_player_max_health_override():
     """Player should use higher base HP."""
     p = Player(x=0, y=0)
     assert p.health == 100
 
+
 def test_player_string_output():
-    """Player __str__ should return readable output."""
+    """Test Player __str__ should return readable output."""
     p = Player(x=1, y=2)
     s = str(p)
     assert "Player" in s
@@ -52,6 +53,7 @@ def test_player_string_output():
 # ---------------------------------------------------------
 # AGRO BEHAVIOR
 # ---------------------------------------------------------
+
 
 def test_npc_agro_default():
     """NPC should default agro to False."""
@@ -75,12 +77,13 @@ def test_npc_agro_explicit_false():
 # MOVEMENT TIMER LOGIC
 # ---------------------------------------------------------
 
+
 def test_npc_update_position_does_not_move_before_threshold(monkeypatch):
     """
     NPC should NOT move before move_timer reaches threshold.
+
     We freeze randomness to ensure deterministic behavior.
     """
-
     n = NPC()
 
     # prevent randomness from affecting test
@@ -100,7 +103,6 @@ def test_npc_update_position_does_not_move_before_threshold(monkeypatch):
 
 def test_npc_update_position_resets_timer(monkeypatch):
     """After threshold, move_timer should reset."""
-
     n = NPC()
 
     monkeypatch.setattr("random.random", lambda: 1.0)  # prevent movement
@@ -108,9 +110,11 @@ def test_npc_update_position_resets_timer(monkeypatch):
     n.update_position(dt=5)
 
     assert n.move_timer == 0.0
+
 # =========================================================
 # OBJECT TESTS
 # =========================================================
+
 
 def test_wall_creation():
     """Wall should store correct coordinates."""
