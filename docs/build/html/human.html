@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Human Module &#8212; RPG Game alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=1f169f65"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Orc Module" href="orc.html" />
+    <link rel="prev" title="Light Elf Module" href="light_elf.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-model.entities.characters.human">
+<span id="human-module"></span><h1>Human Module<a class="headerlink" href="#module-model.entities.characters.human" title="Link to this heading">¶</a></h1>
+<p>Human character module.</p>
+<p>Define the Human NPC class, which represents a human-type
+non-player character in the game world.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="model.entities.characters.human.Human">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">model.entities.characters.human.</span></span><span class="sig-name descname"><span class="pre">Human</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/model/entities/characters/human.html#Human"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#model.entities.characters.human.Human" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="npc.html#model.entities.characters.npc.NPC" title="model.entities.characters.npc.NPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">NPC</span></code></a></p>
+<p>Represent a human NPC character.</p>
+<p>Extend NPC with human-specific behavior parameters such as
+movement probability and timing constraints.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.entities.characters.human.Human.__EXPECTED_PARAMETERS">
+<span class="sig-name descname"><span class="pre">__EXPECTED_PARAMETERS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#model.entities.characters.human.Human.__EXPECTED_PARAMETERS" title="Link to this definition">¶</a></dt>
+<dd><p>Expected initialization parameters.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.entities.characters.human.Human.__ID_PREFIX">
+<span class="sig-name descname"><span class="pre">__ID_PREFIX</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HU'</span></span><a class="headerlink" href="#model.entities.characters.human.Human.__ID_PREFIX" title="Link to this definition">¶</a></dt>
+<dd><p>Unique prefix for human NPC entities.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.entities.characters.human.Human._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></span><a class="headerlink" href="#model.entities.characters.human.Human._abc_impl" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.entities.characters.human.Human._damage">
+<span class="sig-name descname"><span class="pre">_damage</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></span><a class="headerlink" href="#model.entities.characters.human.Human._damage" title="Link to this definition">¶</a></dt>
+<dd><p>Default damage value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.entities.characters.human.Human._max_health">
+<span class="sig-name descname"><span class="pre">_max_health</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></span><a class="headerlink" href="#model.entities.characters.human.Human._max_health" title="Link to this definition">¶</a></dt>
+<dd><p>Default maximum health value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.entities.characters.human.Human._prob_to_move">
+<span class="sig-name descname"><span class="pre">_prob_to_move</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.75</span></span><a class="headerlink" href="#model.entities.characters.human.Human._prob_to_move" title="Link to this definition">¶</a></dt>
+<dd><p>Probability of performing a movement action.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.entities.characters.human.Human._time_to_move">
+<span class="sig-name descname"><span class="pre">_time_to_move</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.3</span></span><a class="headerlink" href="#model.entities.characters.human.Human._time_to_move" title="Link to this definition">¶</a></dt>
+<dd><p>Time interval between movement decisions.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">RPG Game</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registry.html">Registry Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Logic Controllers:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="file_controller.html">File Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="collision_controller.html">Collision Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player_controller.html">Player Controller Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_controller.html">Game Controller Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (General):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="movable_entity.html">Movable Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="map.html">Map Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Characters):</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="character.html">Character Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="npc.html">NPC Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="light_elf.html">Light Elf Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Human Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#model.entities.characters.human.Human"><code class="docutils literal notranslate"><span class="pre">Human</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="orc.html">Orc Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Objects):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="floor.html">Floor Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wall.html">Wall Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="goal.html">Goal Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weapon.html">Weapon Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sword.html">Sword Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">View:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="game_view.html">Game View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="menu_view.html">Menu View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sprite_loader.html">Sprite Loader Module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="light_elf.html" title="previous chapter">Light Elf Module</a></li>
+      <li>Next: <a href="orc.html" title="next chapter">Orc Module</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Silmon121.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/human.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -3,11 +3,16 @@
 import config
 import pygame
 
+
 class SpriteLoader:
     """Handles sprite loading."""
 
     def __init__(self):
-        """Initialize the sprite loader."""
+        """
+        Initialize the sprite loader.
+
+        Object contains all available sprites.
+        """
         self.wall_sprite = pygame.image.load(
             config.WOODEN_WALL_SPRITE
         ).convert_alpha()

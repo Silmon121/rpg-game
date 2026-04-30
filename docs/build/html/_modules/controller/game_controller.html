@@ -34,25 +34,30 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Main game controller module.</span>
 
-<span class="sd">This is the central orchestrator of the game lifecycle.</span>
+<span class="sd">This module acts as the central orchestrator of the game lifecycle.</span>
 
-<span class="sd">Responsible for:</span>
-<span class="sd">- Initializing pygame and game window</span>
+<span class="sd">It is responsible for:</span>
+<span class="sd">- Initializing pygame and the game window</span>
 <span class="sd">- Managing the main game loop</span>
 <span class="sd">- Handling user input events</span>
-<span class="sd">- Creating and storing entities</span>
-<span class="sd">- Loading and transforming maps</span>
-<span class="sd">- Coordinating rendering and game systems</span>
+<span class="sd">- Creating and managing entities</span>
+<span class="sd">- Loading and transforming map data</span>
+<span class="sd">- Coordinating rendering and subsystem controllers</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">registry</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Player</span><span class="p">,</span> <span class="n">NPC</span><span class="p">,</span> <span class="n">Wall</span><span class="p">,</span> <span class="n">Floor</span><span class="p">,</span> <span class="n">Map</span><span class="p">,</span> <span class="n">Goal</span><span class="p">,</span>
+    <span class="n">LightElf</span><span class="p">,</span> <span class="n">Weapon</span><span class="p">,</span> <span class="n">Sword</span><span class="p">,</span> <span class="n">Orc</span><span class="p">,</span> <span class="n">Human</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCREEN_WIDTH</span><span class="p">,</span> <span class="n">SCREEN_HEIGHT</span><span class="p">,</span> <span class="n">FPS</span><span class="p">,</span> <span class="n">GAME_TITLE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">view</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.collision_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">CollisionController</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.player_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlayerController</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.file_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileController</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Player</span><span class="p">,</span> <span class="n">NPC</span><span class="p">,</span> <span class="n">Wall</span><span class="p">,</span> <span class="n">Floor</span><span class="p">,</span> <span class="n">Map</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCREEN_WIDTH</span><span class="p">,</span> <span class="n">SCREEN_HEIGHT</span><span class="p">,</span> <span class="n">FPS</span><span class="p">,</span> <span class="n">GAME_TITLE</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">view</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameView</span>
 
 
 <div class="viewcode-block" id="GameController">
@@ -67,36 +72,48 @@
 <span class="sd">        - Map system</span>
 <span class="sd">        - Rendering system</span>
 
-<span class="sd">    Holds global game state and runs the main loop.</span>
+<span class="sd">    Maintains global game state and executes the main game loop.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1">#: Mapping of entity type names to their classes (factory pattern).</span>
+    <span class="c1">#: Mapping of entity type names to their corresponding classes.</span>
     <span class="n">__AVAILABLE_ENTITIES</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;player&quot;</span><span class="p">:</span> <span class="n">Player</span><span class="p">,</span>
         <span class="s2">&quot;npc&quot;</span><span class="p">:</span> <span class="n">NPC</span><span class="p">,</span>
+        <span class="s2">&quot;light_elf&quot;</span><span class="p">:</span> <span class="n">LightElf</span><span class="p">,</span>
+        <span class="s2">&quot;orc&quot;</span><span class="p">:</span> <span class="n">Orc</span><span class="p">,</span>
+        <span class="s2">&quot;human&quot;</span><span class="p">:</span> <span class="n">Human</span><span class="p">,</span>
+        <span class="s2">&quot;sword&quot;</span><span class="p">:</span> <span class="n">Sword</span>
     <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the game controller and all core systems.</span>
 
-<span class="sd">        Sets up:</span>
-<span class="sd">            - Global registry reference</span>
+<span class="sd">        The following systems are initialized:</span>
 <span class="sd">            - Pygame window and clock</span>
-<span class="sd">            - Controllers (input, collision, file IO, rendering)</span>
-<span class="sd">            - Game state variables</span>
+<span class="sd">            - File, input, collision, and rendering controllers</span>
+<span class="sd">            - Global registry reference</span>
+<span class="sd">            - Initial game state variables</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#: Global registry reference for cross-module access.</span>
         <span class="n">registry</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="bp">self</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__initialize_pygame</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__initialize_controllers</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">maps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">get_maps_json</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_map</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_map</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">maps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">get_maps_json</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># -1 = main menu, -2 = outro</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level_cleared</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_paused</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_map</span><span class="p">()</span>
 
     <span class="c1"># =========================================================</span>
     <span class="c1"># Initialization</span>
@@ -104,23 +121,25 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__initialize_controllers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize all subsystem controllers.</span>
+<span class="sd">        Initialize subsystem controllers.</span>
 
-<span class="sd">        Includes:</span>
-<span class="sd">            - FileController: map/data loading</span>
-<span class="sd">            - PlayerController: input handling</span>
-<span class="sd">            - CollisionController: movement validation</span>
-<span class="sd">            - GameView: rendering system</span>
+<span class="sd">        The following controllers are created:</span>
+<span class="sd">            - FileController (data loading)</span>
+<span class="sd">            - PlayerController (player input handling)</span>
+<span class="sd">            - CollisionController (movement validation)</span>
+<span class="sd">            - GameView (rendering system)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">FileController</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">PlayerController</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="n">CollisionController</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gv</span> <span class="o">=</span> <span class="n">GameView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">PlayerController</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="n">CollisionController</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gv</span> <span class="o">=</span> <span class="n">GameView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__initialize_pygame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize pygame and create the main game window.&quot;&quot;&quot;</span>
         <span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="n">SCREEN_WIDTH</span><span class="p">,</span> <span class="n">SCREEN_HEIGHT</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SCREEN</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">SCREEN_WIDTH</span><span class="p">,</span> <span class="n">SCREEN_HEIGHT</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
         <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="n">GAME_TITLE</span><span class="p">)</span>
 
@@ -132,24 +151,24 @@
 <a class="viewcode-back" href="../../game_controller.html#controller.game_controller.GameController.run">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Run the main game loop.</span>
+<span class="sd">        Execute the main game loop.</span>
 
-<span class="sd">        Handles:</span>
+<span class="sd">        The loop handles:</span>
 <span class="sd">            - Frame timing</span>
+<span class="sd">            - Entity updates</span>
 <span class="sd">            - Input processing</span>
+<span class="sd">            - State evaluation</span>
 <span class="sd">            - Rendering</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
-            <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="n">FPS</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000</span>  <span class="c1"># delta time (currently unused)</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="n">FPS</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000</span>
 
+            <span class="bp">self</span><span class="o">.</span><span class="n">__update_entities</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__check_game_state</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__handle_events</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">gv</span><span class="o">.</span><span class="n">draw_player</span><span class="p">(</span><span class="n">player</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">gv</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
-                <span class="n">player</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="p">,</span>
-                <span class="n">game_map</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_map</span><span class="p">,</span>
-                <span class="n">entities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pc</span><span class="o">.</span><span class="n">check_player_status</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gv</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
 
         <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span></div>
 
@@ -162,17 +181,24 @@
 <a class="viewcode-back" href="../../game_controller.html#controller.game_controller.GameController.create_entity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create new entities.</span>
+<span class="sd">        Create and register a new entity.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            e_name (str): Type of entity to create (e.g. &#39;player&#39;, &#39;npc&#39;)</span>
-<span class="sd">            **kwargs: Arguments passed to entity constructor</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        e_name : str</span>
+<span class="sd">            Type of entity to create (e.g. &#39;player&#39;, &#39;npc&#39;)</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Arguments passed to the entity constructor.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            Entity: Created entity instance</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Entity</span>
+<span class="sd">            Created entity instance.</span>
 
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If entity type is unknown</span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the entity type is not registered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">e_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__AVAILABLE_ENTITIES</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -193,25 +219,59 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__handle_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process all pygame input events.</span>
+<span class="sd">        Process pygame input events.</span>
 
 <span class="sd">        Handles:</span>
-<span class="sd">            - Quit event</span>
+<span class="sd">            - Window close event</span>
 <span class="sd">            - Escape key exit</span>
 <span class="sd">            - Player input delegation</span>
+<span class="sd">            - Main menu progression</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
-
             <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
 
-            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">:</span>
-
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_ESCAPE</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
 
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">pc</span><span class="o">.</span><span class="n">handle_input</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_SPACE</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">select_map</span><span class="p">()</span>
+
+    <span class="c1"># =========================================================</span>
+    <span class="c1"># Game State</span>
+    <span class="c1"># =========================================================</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__check_game_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate whether the current level is completed.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">NPC</span><span class="p">)</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">level_cleared</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level_cleared</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__update_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update all active entities.</span>
+
+<span class="sd">        Handles:</span>
+<span class="sd">            - NPC movement updates</span>
+<span class="sd">            - Weapon exclusion from generic update loop</span>
+<span class="sd">            - Entity cleanup on death</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">[:]:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">Weapon</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="s2">&quot;health&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">entity</span><span class="o">.</span><span class="n">health</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">NPC</span><span class="p">):</span>
+                <span class="n">entity</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
 
     <span class="c1"># =========================================================</span>
     <span class="c1"># Map system</span>
@@ -223,56 +283,109 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load and select the current level map.</span>
 
-<span class="sd">        Converts JSON map data into Map object and transforms</span>
-<span class="sd">        tile data into game entities (walls, floors, NPCs, player).</span>
+<span class="sd">        Converts JSON map data into a Map object and transforms</span>
+<span class="sd">        grid cells into entities and terrain objects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">current_map_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">)]</span>
-            <span class="n">game_map</span> <span class="o">=</span> <span class="n">Map</span><span class="p">(</span><span class="n">current_map_dict</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">current_map_dict</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">current_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__transform_map</span><span class="p">(</span><span class="n">game_map</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">get_maps_json</span><span class="p">()</span>
+
+        <span class="n">current_map_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">current_map_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+            <span class="k">return</span>
+
+        <span class="n">game_map</span> <span class="o">=</span> <span class="n">Map</span><span class="p">(</span><span class="n">current_map_dict</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">current_map_dict</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_map</span><span class="p">(</span><span class="n">game_map</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">__transform_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">map</span><span class="p">):</span>
+<div class="viewcode-block" id="GameController.next_level">
+<a class="viewcode-back" href="../../game_controller.html#controller.game_controller.GameController.next_level">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">next_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Advance to the next level if the current one is cleared.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level_cleared</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restart_level</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameController.restart_level">
+<a class="viewcode-back" href="../../game_controller.html#controller.game_controller.GameController.restart_level">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">restart_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset current level state and reload the map.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level_cleared</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_map</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameController._transform_map">
+<a class="viewcode-back" href="../../game_controller.html#controller.game_controller.GameController._transform_map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_transform_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_map</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert raw map grid into game objects.</span>
+<span class="sd">        Convert raw map grid into game entities.</span>
 
-<span class="sd">        Replaces:</span>
+<span class="sd">        Tile mapping:</span>
 <span class="sd">            &#39;1&#39; → Wall</span>
 <span class="sd">            &#39;0&#39; → Floor</span>
 <span class="sd">            &#39;2&#39; → Player spawn</span>
-<span class="sd">            &#39;LE&#39; → NPC spawn</span>
+<span class="sd">            &#39;LE&#39; → Light Elf</span>
+<span class="sd">            &#39;OR&#39; → Orc</span>
+<span class="sd">            &#39;HU&#39; → Human</span>
+<span class="sd">            &#39;G&#39; → Goal</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            map (Map): Raw map object</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        game_map : Map</span>
+<span class="sd">            Raw map structure.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            Map: Transformed map with entities placed</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Map</span>
+<span class="sd">            Transformed map with entities placed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">)):</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
 
-                <span class="n">cell</span> <span class="o">=</span> <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">cell</span> <span class="o">=</span> <span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
 
                 <span class="k">if</span> <span class="n">cell</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
-                    <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Wall</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+                    <span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Wall</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
 
                 <span class="k">elif</span> <span class="n">cell</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
-                    <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+                    <span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
 
                 <span class="k">elif</span> <span class="n">cell</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
                     <span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_entity</span><span class="p">(</span><span class="s2">&quot;player&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ninja&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="n">player</span>
                     <span class="n">player</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">i</span>
                     <span class="n">player</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">j</span>
-                    <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+                    <span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
 
                 <span class="k">elif</span> <span class="n">cell</span> <span class="o">==</span> <span class="s1">&#39;LE&#39;</span><span class="p">:</span>
-                    <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_entity</span><span class="p">(</span><span class="s2">&quot;npc&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Elf&quot;</span><span class="p">)</span>
+                    <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_entity</span><span class="p">(</span><span class="s2">&quot;light_elf&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Elf&quot;</span><span class="p">)</span>
                     <span class="n">entity</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">i</span>
                     <span class="n">entity</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">j</span>
-                    <span class="nb">map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+                    <span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">map</span></div>
+                <span class="k">elif</span> <span class="n">cell</span> <span class="o">==</span> <span class="s1">&#39;OR&#39;</span><span class="p">:</span>
+                    <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_entity</span><span class="p">(</span><span class="s2">&quot;orc&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Orc&quot;</span><span class="p">)</span>
+                    <span class="n">entity</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">entity</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">j</span>
+                    <span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">cell</span> <span class="o">==</span> <span class="s1">&#39;HU&#39;</span><span class="p">:</span>
+                    <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_entity</span><span class="p">(</span><span class="s2">&quot;human&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Human&quot;</span><span class="p">)</span>
+                    <span class="n">entity</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">entity</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">j</span>
+                    <span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Floor</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">cell</span> <span class="o">==</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span>
+                    <span class="n">game_map</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Goal</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">game_map</span></div>
+</div>
 
 </pre></div>
 
@@ -313,6 +426,35 @@
 <li class="toctree-l1"><a class="reference internal" href="../../collision_controller.html">Collision Controller Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../player_controller.html">Player Controller Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../game_controller.html">Game Controller Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (General):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../entity.html">Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../movable_entity.html">Movable Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../map.html">Map Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Characters):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../character.html">Character Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../npc.html">NPC Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../light_elf.html">Light Elf Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../human.html">Human Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../orc.html">Orc Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Objects):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../floor.html">Floor Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../wall.html">Wall Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../goal.html">Goal Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../weapon.html">Weapon Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sword.html">Sword Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">View:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../game_view.html">Game View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../menu_view.html">Menu View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sprite_loader.html">Sprite Loader Module</a></li>
 </ul>
 
 <div class="relations">

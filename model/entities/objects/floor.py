@@ -1,8 +1,7 @@
 """
 Floor entity module.
 
-Represents a non-blocking ground tile in the game world.
-Floors are walkable and serve as base terrain.
+Represent a non-blocking ground tile in the game world.
 """
 
 from model.entities.entity import Entity
@@ -10,13 +9,10 @@ from model.entities.entity import Entity
 
 class Floor(Entity):
     """
-    Walkable terrain tile.
+    Represent a walkable terrain tile.
 
-    Extends:
-        Entity: Base entity system (ID, position, validation)
-
-    Purpose:
-        Acts as a non-interactive ground element in the map grid.
+    Extend the base Entity with no additional behavior.
+    Used as a non-interactive ground element in the map grid.
     """
 
     #: Unique prefix for Floor entities.
@@ -27,9 +23,11 @@ class Floor(Entity):
 
     def __init__(self, **kwargs):
         """
-        Initialize a Floor tile.
+        Initialize Floor instance.
 
-        Args:
-            **kwargs: Passed to base Entity constructor.
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to Entity constructor.
         """
         super().__init__(**kwargs)

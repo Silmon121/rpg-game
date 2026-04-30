@@ -2,7 +2,7 @@
 Entity package initializer.
 
 This package contains all entity-related classes used in the game
-(e.g., Entity, Character, Player, NPC, Wall, Floor).
+(e.g., Entity, Character, Player, NPC, Wall, Floor ect.).
 
 Note:
     This module is intentionally empty.

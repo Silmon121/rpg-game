@@ -1,11 +1,11 @@
 """
-Character package initializer.
+Object entities package.
 
-Contains all living entities that can act in the game world,
-such as players, NPCs, and other humanoid or AI-controlled entities.
+Provide non-living entities used in the game world, such as
+terrain tiles, obstacles, and interactive objects.
 
-Note:
-    This module is intentionally empty.
-    All imports and public exposure are managed in the top-level
-    `model` package to maintain a clean public API.
+This package contains static or environment-based entities
+that define the structure and layout of the game map.
+
+Public imports are managed in the top-level ``model`` package.
 """

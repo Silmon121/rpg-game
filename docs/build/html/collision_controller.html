@@ -37,33 +37,70 @@
 <span id="collision-controller-module"></span><h1>Collision Controller Module<a class="headerlink" href="#module-controller.collision_controller" title="Link to this heading">¶</a></h1>
 <p>Collision system module.</p>
 <p>Provides logic for validating movement and detecting
-collisions with world boundaries and entities.</p>
+collisions between entities, map boundaries, and world objects.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="controller.collision_controller.CollisionController">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">controller.collision_controller.</span></span><span class="sig-name descname"><span class="pre">CollisionController</span></span><a class="reference internal" href="_modules/controller/collision_controller.html#CollisionController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.collision_controller.CollisionController" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Handles collision detection for the game world.</p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">controller.collision_controller.</span></span><span class="sig-name descname"><span class="pre">CollisionController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_controller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller/collision_controller.html#CollisionController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.collision_controller.CollisionController" title="Link to this definition">¶</a></dt>
+<dd><p>Handle collision detection for the game world.</p>
 <dl class="simple">
 <dt>Responsibilities:</dt><dd><ul class="simple">
-<li><p>Prevent movement outside map bounds</p></li>
-<li><p>Detect collisions with solid entities (e.g., walls)</p></li>
+<li><p>Prevent movement outside map boundaries</p></li>
+<li><p>Detect collisions with static map objects</p></li>
+<li><p>Resolve entity-to-entity interactions</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="controller.collision_controller.CollisionController.check_collision">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_collision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/controller/collision_controller.html#CollisionController.check_collision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.collision_controller.CollisionController.check_collision" title="Link to this definition">¶</a></dt>
-<dd><p>Check whether a position is valid (no collision).</p>
+<dt class="sig sig-object py" id="controller.collision_controller.CollisionController.__check_entity_collision">
+<span class="sig-name descname"><span class="pre">__check_entity_collision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_entity</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#controller.collision_controller.CollisionController.__check_entity_collision" title="Link to this definition">¶</a></dt>
+<dd><p>Resolve collisions between moving entities.</p>
+<dl class="simple">
+<dt>Handles interactions such as:</dt><dd><ul class="simple">
+<li><p>Player - NPC combat</p></li>
+<li><p>NPC - NPC blocking</p></li>
+<li><p>Weapon hits on NPCs</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>new_x</strong> (<em>int</em>) – Target X coordinate.</p></li>
 <li><p><strong>new_y</strong> (<em>int</em>) – Target Y coordinate.</p></li>
+<li><p><strong>call_entity</strong> (<a class="reference internal" href="entity.html#model.entities.entity.Entity" title="model.entities.entity.Entity"><em>Entity</em></a>) – Entity attempting movement.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if movement is allowed,
-False if collision occurs.</p>
+<dd class="field-even"><p>True if movement is allowed, False if blocked.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.collision_controller.CollisionController.check_collision">
+<span class="sig-name descname"><span class="pre">check_collision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_entity</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/controller/collision_controller.html#CollisionController.check_collision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.collision_controller.CollisionController.check_collision" title="Link to this definition">¶</a></dt>
+<dd><p>Validate whether a movement to the given position is allowed.</p>
+<dl class="simple">
+<dt>This method checks:</dt><dd><ul class="simple">
+<li><p>Map boundaries</p></li>
+<li><p>Static tile collisions (walls, goals)</p></li>
+<li><p>Dynamic entity collisions</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_x</strong> (<em>int</em>) – Target X coordinate.</p></li>
+<li><p><strong>new_y</strong> (<em>int</em>) – Target Y coordinate.</p></li>
+<li><p><strong>call_entity</strong> (<a class="reference internal" href="entity.html#model.entities.entity.Entity" title="model.entities.entity.Entity"><em>Entity</em></a>) – Entity requesting movement.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if movement is allowed, False otherwise.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
@@ -116,6 +153,35 @@ False if collision occurs.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="player_controller.html">Player Controller Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="game_controller.html">Game Controller Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (General):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="movable_entity.html">Movable Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="map.html">Map Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Characters):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="character.html">Character Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="npc.html">NPC Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="light_elf.html">Light Elf Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="human.html">Human Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orc.html">Orc Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Objects):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="floor.html">Floor Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wall.html">Wall Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="goal.html">Goal Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weapon.html">Weapon Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sword.html">Sword Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">View:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="game_view.html">Game View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="menu_view.html">Menu View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sprite_loader.html">Sprite Loader Module</a></li>
 </ul>
 
 <div class="relations">

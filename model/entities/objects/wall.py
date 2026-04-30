@@ -1,8 +1,7 @@
 """
 Wall entity module.
 
-Represents an impassable obstacle in the game world.
-Walls block movement and are used for map boundaries and structures.
+Represent an impassable obstacle in the game world.
 """
 
 from model.entities.entity import Entity
@@ -10,13 +9,10 @@ from model.entities.entity import Entity
 
 class Wall(Entity):
     """
-    Impassable world object.
+    Represent an impassable world object.
 
-    Extends:
-        Entity: Base entity system (ID, position, validation)
-
-    Purpose:
-        Prevents player and NPC movement through its position.
+    Used as a blocking element in the map grid. Prevents movement
+    of players and other entities through its position.
     """
 
     #: Unique prefix for Wall entities.
@@ -30,9 +26,11 @@ class Wall(Entity):
 
     def __init__(self, **kwargs):
         """
-        Initialize a Wall tile.
+        Initialize Wall instance.
 
-        Args:
-            **kwargs: Passed to base Entity constructor.
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to Entity constructor.
         """
         super().__init__(**kwargs)

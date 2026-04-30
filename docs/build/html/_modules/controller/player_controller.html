@@ -34,50 +34,119 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Player input controller module.</span>
 
-<span class="sd">Handles keyboard input and translates it into</span>
-<span class="sd">player movement actions.</span>
+<span class="sd">Handle keyboard input and translate it into player actions.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">registry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sword</span>
 
 
 <div class="viewcode-block" id="PlayerController">
 <a class="viewcode-back" href="../../player_controller.html#controller.player_controller.PlayerController">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PlayerController</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Translates input events into player actions.</span>
+<span class="sd">    Handle player input and state updates.</span>
 
-<span class="sd">    Responsibilities:</span>
-<span class="sd">        - Reads keyboard input</span>
-<span class="sd">        - Moves player entity accordingly</span>
+<span class="sd">    Translate input events into movement and combat actions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_controller</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize PlayerController instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        game_controller : GameController</span>
+<span class="sd">                Controller providing access to player, entities, and systems.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gc</span> <span class="o">=</span> <span class="n">game_controller</span>
 
 <div class="viewcode-block" id="PlayerController.handle_input">
 <a class="viewcode-back" href="../../player_controller.html#controller.player_controller.PlayerController.handle_input">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">handle_input</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process a pygame input event and move the player.</span>
+<span class="sd">        Process input event and update player actions.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            event: pygame event containing key input</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        event : pygame.event.Event</span>
+<span class="sd">            Input event containing key information.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">player</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">player</span>
+        <span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span>
 
-        <span class="c1"># Safety check: ensure player position exists</span>
+        <span class="c1"># Ensure player position exists</span>
         <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">player</span><span class="o">.</span><span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="k">match</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
-            <span class="k">case</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span><span class="p">:</span>
-                <span class="n">player</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">case</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span><span class="p">:</span>
-                <span class="n">player</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="k">case</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span><span class="p">:</span>
-                <span class="n">player</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="k">case</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span><span class="p">:</span>
-                <span class="n">player</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">player</span><span class="o">.</span><span class="n">sword_attack</span><span class="p">:</span>
+            <span class="k">match</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+                <span class="k">case</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span><span class="p">:</span>
+                    <span class="n">player</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">case</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span><span class="p">:</span>
+                    <span class="n">player</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">case</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span><span class="p">:</span>
+                    <span class="n">player</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">case</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span><span class="p">:</span>
+                    <span class="n">player</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">case</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_SPACE</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sword_attack</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PlayerController.check_player_status">
+<a class="viewcode-back" href="../../player_controller.html#controller.player_controller.PlayerController.check_player_status">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_player_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update player-related state.</span>
+
+<span class="sd">        Handle player death and active weapon entities.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dt : float</span>
+<span class="sd">            Time delta used for updating cooldowns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span>
+
+        <span class="k">if</span> <span class="n">player</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">health</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">restart_level</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">sword_attack</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">entities</span><span class="p">[:]:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">Sword</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">entity</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+                        <span class="n">player</span><span class="o">.</span><span class="n">sword_attack</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="PlayerController.sword_attack">
+<a class="viewcode-back" href="../../player_controller.html#controller.player_controller.PlayerController.sword_attack">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sword_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Trigger sword attack action.</span>
+
+<span class="sd">        Spawn a sword entity in front of the player and</span>
+<span class="sd">        perform initial collision checks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">player</span>
+
+        <span class="n">player</span><span class="o">.</span><span class="n">sword_attack</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">create_entity</span><span class="p">(</span>
+            <span class="s2">&quot;sword&quot;</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">player</span><span class="o">.</span><span class="n">face_direction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">player</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">player</span><span class="o">.</span><span class="n">face_direction</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">player</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">swords</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">entity</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">entities</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">Sword</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">sword</span> <span class="ow">in</span> <span class="n">swords</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">check_collision</span><span class="p">(</span><span class="n">sword</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">sword</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">sword</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
@@ -119,6 +188,35 @@
 <li class="toctree-l1"><a class="reference internal" href="../../collision_controller.html">Collision Controller Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../player_controller.html">Player Controller Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../game_controller.html">Game Controller Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (General):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../entity.html">Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../movable_entity.html">Movable Entity Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../map.html">Map Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Characters):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../character.html">Character Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../npc.html">NPC Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../light_elf.html">Light Elf Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../human.html">Human Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../orc.html">Orc Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Model (Objects):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../floor.html">Floor Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../wall.html">Wall Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../goal.html">Goal Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../weapon.html">Weapon Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sword.html">Sword Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">View:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../game_view.html">Game View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../menu_view.html">Menu View Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sprite_loader.html">Sprite Loader Module</a></li>
 </ul>
 
 <div class="relations">

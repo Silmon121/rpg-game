@@ -1,22 +1,29 @@
-"""Module for map handling and representation."""
+"""
+Map module.
+
+This module provides a basic representation of a game map using
+a grid-based structure.
+"""
 
 
 class Map:
     """
-    Represents a game map composed of a grid structure.
+    Represent a game map composed of a grid structure.
 
-    Attributes:
-        id (int): Unique identifier for the map.
-        grid (list): 2D structure representing the map layout.
+    The map stores a 2D grid describing the layout of tiles or objects
+    and a unique identifier for reference.
     """
 
     def __init__(self, id: int, grid: list):
         """
-        Initialize a Map instance.
+        Initialize Map instance.
 
-        Args:
-            id (int): Unique identifier for the map.
-            grid (list): 2D list representing map tiles or layout.
+        Parameters
+        ----------
+        id : int
+            Unique identifier of the map.
+        grid : list
+            Two-dimensional list representing map tiles or layout.
         """
         self.id = id
         self.grid = grid

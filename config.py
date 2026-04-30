@@ -28,7 +28,7 @@ SCREEN_HEIGHT = TILE_SIZE * GRID_HEIGHT
 
 #: Angle values enum class
 class Direction:
-    """Define the direction enum."""
+    """Define the direction."""
 
     UP = (0, -1)
     DOWN = (0, 1)
